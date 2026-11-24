@@ -64,7 +64,10 @@ QUIZ.course('genetics2', ({ r, ffl, table }) => ({
              r`White, but it still needs adenine`],
       exp: r`Each genome supplies the intact copy the other lacks — <i>ADE2</i> from one parent,
              <i>ADE1</i> from the other. Both enzymes are made, the pathway runs, and the diploid is white
-             and prototrophic. The mutations <b>complement</b>.` },
+             and prototrophic. The mutations <b>complement</b>.`,
+      expfig: { img: 'genetics2/yeast_plate.jpg',
+                cap: r`The real experiment: bars are the mutagenised haploid strains, circles the diploids made from
+                       them. A white diploid means the two mutations complement — they are in different genes.` } },
 
     /* ---------- two mutants: Drosophila ---------- */
 
@@ -126,7 +129,9 @@ QUIZ.course('genetics2', ({ r, ffl, table }) => ({
       opts: [r`2`, r`1`, r`3`, r`5`],
       exp: r`Red means the pair fails to complement, so those two mutations are in the same gene. A, B and E
              fail with each other; C and D fail with each other; every A/B/E × C/D pair complements. That is
-             two complementation groups, and therefore two genes.` },
+             two complementation groups, and therefore two genes.`,
+      expfig: { img: 'genetics2/yeast_plate.jpg',
+                cap: r`What the plate looks like: red diploids failed to complement, white ones complemented.` } },
 
     { id: 'G8-C10', lec: 8, diff: 2, topic: 'Complementation groups',
       q: r`In the same experiment, strain A gives a <b>red</b> diploid with B and with E, and a
@@ -192,6 +197,40 @@ QUIZ.course('genetics2', ({ r, ffl, table }) => ({
              rescued by a neighbour that is intact there. It is the standard exception to the rule that one
              complementation group equals one gene, and the reason a surprising result is worth repeating
              before it is believed.` },
+
+    /* ---------- reading the lecture's own figures ---------- */
+
+    { id: 'G8-C16', lec: 8, diff: 2, topic: 'Complementation groups',
+      q: r`Three temperature-sensitive cell-division mutants of fission yeast — <i>cdcA</i>, <i>cdcB</i> and
+           <i>cdcC</i> — were combined pairwise into diploids, and the spores of each diploid were scored for
+           growth at the restrictive temperature. Which conclusion follows?`,
+      fig: { img: 'genetics2/allelism_test.jpg' },
+      opts: [r`<i>cdcA</i> and <i>cdcB</i> are alleles of one gene; <i>cdcC</i> is a second gene`,
+             r`All three are alleles of the same gene`,
+             r`All three are in different genes`,
+             r`<i>cdcA</i> and <i>cdcC</i> are alleles of one gene; <i>cdcB</i> is a second gene`],
+      exp: r`The <i>cdcA</i> × <i>cdcB</i> diploid gives only temperature-sensitive spores — no complementation,
+             so both mutations hit the same gene. The combinations with <i>cdcC</i> give some non-ts spores:
+             complementation, so <i>cdcC</i> is a different gene. Two groups, two genes, named <i>cdc1</i>
+             and <i>cdc2</i>.`,
+      expfig: { img: 'genetics2/allelism_test_answer.jpg' },
+      src: 'Lecture 9 · test of allelism' },
+
+    { id: 'G8-C17', lec: 8, diff: 1, topic: 'Complementation groups',
+      q: r`Mutagenised yeast cells are replica-plated and the colonies that fail to grow without leucine are
+           picked. All of them have the same phenotype: they need leucine. What does that tell you about the
+           number of genes involved?`,
+      fig: { img: 'genetics2/leu_screen.jpg' },
+      opts: [r`Nothing yet — a shared phenotype can come from several genes, and only crosses between the mutants can count them`,
+             r`They must all be mutations in one gene, since the phenotype is identical`,
+             r`There must be as many genes as there are mutants`,
+             r`The number of genes can be read off the number of colonies picked`],
+      exp: r`Leucine biosynthesis is a pathway of several enzymes, and losing any one of them gives the same
+             requirement for leucine. Sorting the mutants by phenotype groups them by pathway, not by gene;
+             the allelism test is what counts the genes. In this screen they fall into three complementation
+             groups — <i>leu1</i>, <i>leu2</i> and <i>leu3</i>.`,
+      expfig: { img: 'genetics2/leu_screen_answer.jpg' },
+      src: 'Lecture 9 · auxotrophic screen' },
 
   ]
 }));
