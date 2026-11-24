@@ -338,7 +338,7 @@ const STATS_URL = window.SBQ_STATS || 'https://abacus.jasoncameron.dev';
 const STATS_NS  = 'lq-meisterlab-unibe';
 // LECTURER PASSWORD: presenter view, statistics and the course checker ask for it (a light barrier against curious students, not real security —
 // the page is public, so the hash is readable). Change it with:  node dev/set-password.js <new password>   (writes the hash below and rebuilds index.html)
-const LECTURER_HASH = window.SBQ_LECT_HASH !== undefined ? window.SBQ_LECT_HASH : '847e70d73b2fa8c8e657d74e0b54ef990aae44f11a0f29bcecdf61f6686f5015';   // '' = no password
+const LECTURER_HASH = window.SBQ_LECT_HASH !== undefined ? window.SBQ_LECT_HASH : '538fe1e4187c3c9a1ac9b9b8fddcb60b9459d15fe205cd2d90fb7fc5f8d34e31';   // '' = no password
 const hostOf = u => { try{ return new URL(u).host; }catch(e){ return u; } };
 
 /* ====================================================================
