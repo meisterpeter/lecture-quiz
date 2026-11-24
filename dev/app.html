@@ -335,7 +335,7 @@ const dec = b => { try{ return JSON.parse(typeof b==='string' ? b : new TextDeco
 // was answered and how often correctly. No personal data, no cookies. Uses the free Abacus counting service (abacus.jasoncameron.dev).
 // View the numbers at <site>/#stats .  Set STATS_NS = '' to switch counting off.
 const STATS_URL = window.SBQ_STATS || 'https://abacus.jasoncameron.dev';
-const STATS_NS  = 'lq-towbinlab-unibe';
+const STATS_NS  = 'lq-meisterlab-unibe';
 // LECTURER PASSWORD: presenter view, statistics and the course checker ask for it (a light barrier against curious students, not real security —
 // the page is public, so the hash is readable). Change it with:  node dev/set-password.js <new password>   (writes the hash below and rebuilds index.html)
 const LECTURER_HASH = window.SBQ_LECT_HASH !== undefined ? window.SBQ_LECT_HASH : '847e70d73b2fa8c8e657d74e0b54ef990aae44f11a0f29bcecdf61f6686f5015';   // '' = no password
