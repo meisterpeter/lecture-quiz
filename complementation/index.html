@@ -32,8 +32,8 @@ h3{font-size:.95rem;margin:14px 0 6px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
 .steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .pill{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:3px 10px;font-size:.8rem;cursor:pointer}
-.pill.cur{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .pill.done{color:var(--ok);border-color:var(--ok)}
+.pill.cur{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 button,.btn{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 14px;cursor:pointer}
 button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 button.ghost{background:transparent}
@@ -126,8 +126,8 @@ const figBox = f => !f ? '' : (Array.isArray(f) ? `<div class="cfigs">${f.map(fi
 /* ---------------- levels ---------------- */
 const LEVELS = [
 {
-  kind:'starter', tab:'1a &middot; Yeast: two mutants',
-  title:'Two red yeast mutants',
+  kind:'starter', tab:'1a &middot; Yeast (ade): two mutants',
+  title:'Two red yeast mutants (S. cerevisiae)',
   intro:`<b>ade1</b> and <b>ade2</b> are two different genes of the adenine pathway, and a recessive
    mutation in either one gives a red colony that needs adenine. Two haploid mutants, <b>m1</b> and
    <b>m2</b>, are both red. Mate them and the diploid carries one genome from each parent — but which
@@ -169,7 +169,7 @@ const LEVELS = [
    complementation test. Next: five mutants at once, where you have to work out the groups yourself.`
 },
 {
-  kind:'matrix', tab:'1b &middot; Yeast: five strains',
+  kind:'matrix', tab:'1b &middot; Yeast (ade): five strains',
   title:'Five adenine mutants of budding yeast',
   intro:`Five haploid strains from a mutagenesis, all red and all needing adenine, so all blocked somewhere
    in adenine synthesis. Mate them pairwise and read the <b>diploid</b> colonies: white means the two
@@ -185,8 +185,123 @@ const LEVELS = [
    be of opposite mating type.)`
 },
 {
-  kind:'starter', tab:'2a &middot; Flies: two stocks',
-  title:'Two brown-eyed fly stocks',
+  kind:'starter', tab:'1c &middot; Yeast (cdc): three mutants',
+  title:'Three cell-division mutants of fission yeast (S. pombe)',
+  intro:`In fission yeast (<i>Schizosaccharomyces pombe</i>), temperature-sensitive <b>cdc</b> mutants grow
+   normally at 25&nbsp;&deg;C, but arrest as elongated cells unable to divide at 35&nbsp;&deg;C. Three haploid
+   mutants — <b>cdcA</b>, <b>cdcB</b> and <b>cdcC</b> — are mated pairwise into diploids, and their spores are
+   tested at the restrictive temperature.`,
+  parents:[['cdcA (ts, elongated)', dot(false)], ['cdcB (ts, elongated)', dot(false)], ['cdcC (ts, elongated)', dot(false)]],
+  fig:[{ img:'genetics2/pombe_cdc_cells.jpg', cap:'Wild-type S. pombe vs elongated cdc mutant at 35 °C (Lecture 8 · slide 78).' },
+       { img:'genetics2/allelism_test.jpg', cap:'Pairwise diploids and spore phenotypes from Lecture 8 · slide 80.' }],
+  cases:[
+   {label:'Crosses with <i>cdcA</i>, <i>cdcB</i> and <i>cdcC</i>',
+    qg:'Looking at the spore table, which pair of mutations are alleles of the <b>same</b> gene?',
+    og:['<i>cdcA</i> and <i>cdcB</i> (diploid gives only ts spores)',
+        '<i>cdcA</i> and <i>cdcC</i> (diploid gives some non-ts spores)',
+        '<i>cdcB</i> and <i>cdcC</i> (diploid gives some non-ts spores)',
+        'All three are alleles of one gene'],
+    eg:`<i>cdcA</i> &times; <i>cdcB</i> produces exclusively temperature-sensitive spores — neither chromosome
+        carries an intact copy of the mutated gene, nor can recombination between two mutations in the same
+        gene readily regenerate wild-type.`,
+    qp:'How many genes (complementation groups) do <i>cdcA</i>, <i>cdcB</i> and <i>cdcC</i> represent?',
+    op:['Two genes: cdc1 (cdcA, cdcB) and cdc2 (cdcC)','One gene','Three genes'], ap:0,
+    ep:`<i>cdcA</i> and <i>cdcB</i> fail to complement (alleles of <i>cdc1</i>), whereas both complement and
+        recombine with <i>cdcC</i> (a second gene, <i>cdc2</i>).`,
+    expfig:{ img:'genetics2/allelism_test_answer.jpg', cap:'Lecture 8 · slide 80: test of allelism identifies two genes, cdc1 and cdc2.' }}
+  ],
+  outro:`Next: moving from unicellular yeast to a multicellular signalling pathway — vulval development in
+   <i>C.&nbsp;elegans</i>.`
+},
+{
+  kind:'starter', tab:'2a &middot; Worms (vulva): two mutants',
+  title:'Two vulvaless worm mutants (C. elegans)',
+  intro:`The <i>C.&nbsp;elegans</i> vulva forms when the anchor cell sends the EGF-like signal <b>LIN-3</b> to
+   the vulval precursor cells. They receive it through the receptor <b>LET-23</b> and pass it on through
+   LET-60 (Ras), <b>LIN-45</b> (Raf), MEK-2 and MPK-1. Lose a link in this chain and the precursors cannot
+   make a vulva: the animal is <b>Vulvaless (Vul)</b>, cannot lay its eggs, and the eggs hatch inside the
+   mother &mdash; a &ldquo;bag of worms&rdquo;.<br>
+   A mutagenesis screen picks up two Vul hermaphrodites, <b>w1</b> and <b>w2</b>, both recessive. Worms
+   are already diploid, so you do not have to build a diploid &mdash; you <b>cross</b> w1 hermaphrodites with
+   w2 males and look at the cross-progeny.`,
+  parents:[['w1 (hermaphrodite, Vul)', worm(false)], ['w2 (male, from a Vul strain)', worm(false)]],
+  fig:[{ img:'genetics2/celegans_vulva_lineage.jpg', cap:'Anchor cell induction of vulval precursor cells P5.p–P7.p (Lecture 8 · slide 87).' },
+       { img:'genetics2/celegans_vulva_phenotypes.jpg', cap:'Wild-type single vulva vs Vulvaless “bag of worms” (Lecture 8 · slide 90).' }],
+  pre:{ q:'Hermaphrodites also fertilise themselves, so the plate holds self-progeny as well as cross-progeny. How do you recognise the cross-progeny?',
+        fig:{ img:'genetics2/celegans_xx_xo_cross.svg' },
+        o:['About half of the cross-progeny are males, while selfing makes almost none &mdash; so males in the next generation mark a successful cross',
+           'Cross-progeny hermaphrodites have a normal vulva and self-progeny do not',
+           'Cross-progeny are visibly larger than self-progeny',
+           'Cross-progeny lay more eggs than self-progeny'],
+        e:`A male's sperm carries an X or no X in equal numbers, so half of the cross-progeny are X0 males. A
+           selfing hermaphrodite makes males only through rare X non-disjunction, about one in a thousand.
+           The vulva cannot serve as the marker, since whether it forms is exactly what is being tested.` },
+  cases:[
+   {label:'Possibility A — both mutations are in the same gene, <i>let-23</i>',
+    fig:{ img:'genetics2/worm_let23_cross.svg' },
+    qg:'What is the genotype of a cross-progeny hermaphrodite?',
+    og:['<span class="gt">let-23(a) / let-23(b)</span>',
+        '<span class="gt">let-23(a) / +</span>',
+        '<span class="gt">let-23(a) / let-23(a)</span>',
+        '<span class="gt">let-23(a) / + ; lin-45(b) / +</span>'],
+    eg:`Each parent is homozygous and passes on one copy of chromosome II, so the cross-progeny carry one
+        mutant allele from each and no wild-type <i>let-23</i>. <i>let-23(a) / +</i> is what a cross to
+        wild-type gives; <i>let-23(a) / let-23(a)</i> is a self-progeny of the mother; the last option
+        involves two genes, which is possibility B.`,
+    pfig:{ img:'genetics2/worm_let23_f1.svg' },
+    qp:'What does the cross-progeny hermaphrodite look like?',
+    op:['Vul — no vulva, eggs hatch inside (bag of worms)','Normal vulva, eggs are laid'], ap:0,
+    ep:`Both copies of <i>let-23</i> are defective, so no working receptor reaches the vulval precursor
+        cells and LIN-3 is not read: the cross-progeny are <b>Vul</b>. The two alleles <b>fail to
+        complement</b>.`},
+   {label:'Possibility B — one mutation in <i>let-23</i>, the other in <i>lin-45</i>',
+    fig:{ img:'genetics2/worm_let23_lin45_cross.svg' },
+    qg:'What is the genotype of a cross-progeny hermaphrodite?',
+    og:['<span class="gt">let-23(a) / + ; lin-45(b) / +</span>',
+        '<span class="gt">let-23(a) / lin-45(b)</span>',
+        '<span class="gt">let-23(a) / let-23(a) ; lin-45(b) / lin-45(b)</span>',
+        '<span class="gt">let-23(a) / + ; lin-45(b) / lin-45(b)</span>'],
+    eg:`<i>let-23</i> is on chromosome II and <i>lin-45</i> on IV, hence the semicolon. The mother brings
+        mutant <i>let-23</i> and wild-type <i>lin-45</i>; the father the reverse. The cross-progeny are
+        therefore heterozygous at both genes. <i>let-23(a) / lin-45(b)</i> would treat the two as alleles
+        of one gene, and the double homozygote cannot come out of this cross.`,
+    pfig:{ img:'genetics2/worm_let23_lin45_f1.svg' },
+    qp:'What does the cross-progeny hermaphrodite look like?',
+    op:['Vul — no vulva, eggs hatch inside (bag of worms)','Normal vulva, eggs are laid'], ap:1,
+    ep:`Each parent supplies the working copy of the gene the other has lost: LET-23 from the father,
+        LIN-45 from the mother. The whole chain is functional, the vulva forms and the eggs are laid. The
+        mutations <b>complement</b>.`,
+    expfig:{ img:'genetics2/celegans_egf_ras_pathway.svg', cap:'With one intact copy each of <i>let-23</i> and <i>lin-45</i>, the EGF/Ras/MAPK cascade is restored.' }}
+  ],
+  outro:`Same logic as in yeast, now for a signalling pathway. Because the pathway is a chain, loss of any
+   link gives the same Vul phenotype &mdash; so a screen for Vul returns several genes at once, and the
+   complementation test is how you count them. Complete loss of several of these genes is lethal, so the
+   viable Vul alleles that a screen recovers are partial loss-of-function; they are recessive, which is what
+   the test needs.`
+},
+{
+  kind:'matrix', tab:'2b &middot; Worms (vulva): five mutants',
+  title:'Five Vul strains from one screen',
+  intro:`A mutagenesis screen for vulvaless worms has yielded five recessive Vul strains. Cross each pair
+   (hermaphrodites of one strain with males of the other) and look at the F1 cross-progeny hermaphrodites:
+   a normal vulva means the two mutations complement. This time there are <b>three</b> genes in the set.`,
+  fig:{ img:'genetics2/celegans_egf_ras_pathway.svg', cap:'Multiple genes in the LIN-3 → LET-23 → LET-60 → LIN-45 → MEK-2 → MPK-1 pathway mutate to the same Vulvaless phenotype.' },
+  expfig:{ img:'genetics2/heidelberg_saturation.jpg', cap:'Screen saturation curve (Lecture 10 · slide 18): until a screen approaches saturation, some genes (like V3 here) are hit only once while others remain unhit.' },
+  unit:'strain', cross:'Cross', product:'F1 cross-progeny',
+  names:['V1','V2','V3','V4','V5'], groups:{V1:0,V2:1,V3:2,V4:0,V5:1}, ngenes:3, geneWord:'three',
+  minNote:`at least five are needed to prove this grouping: two to show that the two pairs are alleles, and
+   three to show that the three genes complement one another.`,
+  render:worm, wtWord:'normal', mutWord:'Vul', mutPhen:'Vulvaless',
+  reveal:`<b>V1 and V4</b>, <b>V2 and V5</b> and <b>V3 on its own</b> are three complementation groups, so
+   three genes. Genes that can come out of a Vul screen include <i>let-23</i> (the EGF receptor,
+   chromosome II), <i>lin-45</i> (Raf, IV), <i>mek-2</i> (MAP kinase kinase, I) and <i>mpk-1</i> (MAP kinase,
+   III), all links of one chain. V3 was hit only once, a reminder that the screen is not saturated and that
+   other genes of the pathway are probably still unhit. What the test cannot tell you is the <i>order</i> in
+   which the genes act &mdash; that takes double mutants (epistasis), not complementation.`
+},
+{
+  kind:'starter', tab:'3a &middot; Flies: two stocks',
+  title:'Two brown-eyed fly stocks (Drosophila)',
   intro:`Wild-type <i>Drosophila</i> eyes are red. Recessive mutations in <b>brown</b> (<i>bw</i>, on
    chromosome&nbsp;2) or in <b>rosy</b> (<i>ry</i>, on chromosome&nbsp;3) both give brownish eyes. Two
    homozygous stocks, <b>s1</b> and <b>s2</b>, both have brown eyes. Cross them and score the F1.`,
@@ -222,11 +337,11 @@ const LEVELS = [
     ep:`Each chromosome carries a wild-type copy of the gene the other has lost, both pigments are made, and
         the F1 is <b>red</b> — wild-type. The mutations <b>complement</b>.`}
   ],
-  outro:`Same logic as in yeast, one difference in practice: the fly stocks are already diploid
-   homozygotes, so the cross itself produces the genotype being tested.`
+  outro:`Same logic as in yeast and worms, one difference in practice from yeast: the fly stocks are already
+   diploid homozygotes, so the cross itself produces the genotype being tested.`
 },
 {
-  kind:'matrix', tab:'2b &middot; Flies: five stocks',
+  kind:'matrix', tab:'3b &middot; Flies: five stocks',
   title:'Five brown-eyed stocks',
   intro:`Five homozygous stocks, all with brown eyes instead of red. Each stock is already a diploid
    homozygote, so cross two stocks and score the <b>F1</b>: red means the two mutations complement.`,
@@ -238,90 +353,6 @@ const LEVELS = [
   reveal:`Stocks <b>1, 3 and 5</b> are alleles of one eye-colour gene, <b>2 and 4</b> of another. Two genes
    of the same pigment pathway give the same brown eye, which is why the phenotype alone cannot count
    genes for you.`
-},
-{
-  kind:'starter', tab:'3a &middot; Worms: two mutants',
-  title:'Two vulvaless worm mutants',
-  intro:`The <i>C.&nbsp;elegans</i> vulva forms when the anchor cell sends the EGF-like signal <b>LIN-3</b> to
-   the vulval precursor cells. They receive it through the receptor <b>LET-23</b> and pass it on through
-   LET-60 (Ras), <b>LIN-45</b> (Raf), MEK-2 and MPK-1. Lose a link in this chain and the precursors cannot
-   make a vulva: the animal is <b>Vulvaless (Vul)</b>, cannot lay its eggs, and the eggs hatch inside the
-   mother &mdash; a &ldquo;bag of worms&rdquo;.<br>
-   A mutagenesis screen picks up two Vul hermaphrodites, <b>w1</b> and <b>w2</b>, both recessive. Worms
-   are already diploid, so you do not have to build a diploid &mdash; you <b>cross</b> w1 hermaphrodites with
-   w2 males and look at the cross-progeny.`,
-  parents:[['w1 (hermaphrodite, Vul)', worm(false)], ['w2 (male, from a Vul strain)', worm(false)]],
-  fig:[{ img:'genetics2/celegans_vulva_lineage.jpg', cap:'Anchor cell induction of vulval precursor cells P5.p–P7.p (Lecture 8 · slide 87).' },
-       { img:'genetics2/celegans_vulva_phenotypes.jpg', cap:'Wild-type single vulva vs Vulvaless “bag of worms” (Lecture 8 · slide 90).' }],
-  pre:{ q:'Hermaphrodites also fertilise themselves, so the plate holds self-progeny as well as cross-progeny. How do you recognise the cross-progeny?',
-        fig:{ img:'genetics2/celegans_xx_xo_cross.svg' },
-        o:['About half of the cross-progeny are males, while selfing makes almost none &mdash; so males in the next generation mark a successful cross',
-           'Cross-progeny hermaphrodites have a normal vulva and self-progeny do not',
-           'Cross-progeny are visibly larger than self-progeny',
-           'Cross-progeny lay more eggs than self-progeny'],
-        e:`A male's sperm carries an X or no X in equal numbers, so half of the cross-progeny are X0 males. A
-           selfing hermaphrodite makes males only through rare X non-disjunction, about one in a thousand.
-           The vulva cannot serve as the marker, since whether it forms is exactly what is being tested.` },
-  cases:[
-   {label:'Possibility A — both mutations are in the same gene, <i>let-23</i>',
-    fig:{ img:'genetics2/worm_let23_cross.svg' },
-    qg:'What is the genotype of a cross-progeny hermaphrodite?',
-    og:['<span class="gt">let-23(a) / let-23(b)</span>',
-        '<span class="gt">let-23(a) / +</span>',
-        '<span class="gt">let-23(a) / let-23(a)</span>',
-        '<span class="gt">let-23(a) / + ; lin-45(b) / +</span>'],
-    eg:`Each parent is homozygous and passes on one copy of chromosome II, so the cross-progeny carry one
-        mutant allele from each and no wild-type <i>let-23</i>. <i>let-23(a) / +</i> is what a cross to
-        wild-type gives; <i>let-23(a) / let-23(a)</i> is a self-progeny of the mother; the last option
-        involves two genes, which is possibility B.`,
-    qp:'What does the cross-progeny hermaphrodite look like?',
-    op:['Vul — no vulva, eggs hatch inside (bag of worms)','Normal vulva, eggs are laid'], ap:0,
-    ep:`Both copies of <i>let-23</i> are defective, so no working receptor reaches the vulval precursor
-        cells and LIN-3 is not read: the cross-progeny are <b>Vul</b>. The two alleles <b>fail to
-        complement</b>.`},
-   {label:'Possibility B — one mutation in <i>let-23</i>, the other in <i>lin-45</i>',
-    fig:{ img:'genetics2/worm_let23_lin45_cross.svg' },
-    qg:'What is the genotype of a cross-progeny hermaphrodite?',
-    og:['<span class="gt">let-23(a) / + ; lin-45(b) / +</span>',
-        '<span class="gt">let-23(a) / lin-45(b)</span>',
-        '<span class="gt">let-23(a) / let-23(a) ; lin-45(b) / lin-45(b)</span>',
-        '<span class="gt">let-23(a) / + ; lin-45(b) / lin-45(b)</span>'],
-    eg:`<i>let-23</i> is on chromosome II and <i>lin-45</i> on IV, hence the semicolon. The mother brings
-        mutant <i>let-23</i> and wild-type <i>lin-45</i>; the father the reverse. The cross-progeny are
-        therefore heterozygous at both genes. <i>let-23(a) / lin-45(b)</i> would treat the two as alleles
-        of one gene, and the double homozygote cannot come out of this cross.`,
-    qp:'What does the cross-progeny hermaphrodite look like?',
-    op:['Vul — no vulva, eggs hatch inside (bag of worms)','Normal vulva, eggs are laid'], ap:1,
-    ep:`Each parent supplies the working copy of the gene the other has lost: LET-23 from the father,
-        LIN-45 from the mother. The whole chain is functional, the vulva forms and the eggs are laid. The
-        mutations <b>complement</b>.`,
-    expfig:{ img:'genetics2/celegans_egf_ras_pathway.svg', cap:'With one intact copy each of <i>let-23</i> and <i>lin-45</i>, the EGF/Ras/MAPK cascade is restored.' }}
-  ],
-  outro:`Same logic as in yeast and flies, now for a signalling pathway. Because the pathway is a chain, loss
-   of any link gives the same Vul phenotype &mdash; so a screen for Vul returns several genes at once, and
-   the complementation test is how you count them. Complete loss of several of these genes is lethal, so
-   the viable Vul alleles that a screen recovers are partial loss-of-function; they are recessive, which is
-   what the test needs.`
-},
-{
-  kind:'matrix', tab:'3b &middot; Worms: five mutants',
-  title:'Five Vul strains from one screen',
-  intro:`A mutagenesis screen for vulvaless worms has yielded five recessive Vul strains. Cross each pair
-   (hermaphrodites of one strain with males of the other) and look at the F1 cross-progeny hermaphrodites:
-   a normal vulva means the two mutations complement. This time there are <b>three</b> genes in the set.`,
-  fig:{ img:'genetics2/celegans_egf_ras_pathway.svg', cap:'Multiple genes in the LIN-3 → LET-23 → LET-60 → LIN-45 → MEK-2 → MPK-1 pathway mutate to the same Vulvaless phenotype.' },
-  expfig:{ img:'genetics2/heidelberg_saturation.jpg', cap:'Screen saturation curve (Lecture 10 · slide 18): until a screen approaches saturation, some genes (like V3 here) are hit only once while others remain unhit.' },
-  unit:'strain', cross:'Cross', product:'F1 cross-progeny',
-  names:['V1','V2','V3','V4','V5'], groups:{V1:0,V2:1,V3:2,V4:0,V5:1}, ngenes:3, geneWord:'three',
-  minNote:`at least five are needed to prove this grouping: two to show that the two pairs are alleles, and
-   three to show that the three genes complement one another.`,
-  render:worm, wtWord:'normal', mutWord:'Vul', mutPhen:'Vulvaless',
-  reveal:`<b>V1 and V4</b>, <b>V2 and V5</b> and <b>V3 on its own</b> are three complementation groups, so
-   three genes. Genes that can come out of a Vul screen include <i>let-23</i> (the EGF receptor,
-   chromosome II), <i>lin-45</i> (Raf, IV), <i>mek-2</i> (MAP kinase kinase, I) and <i>mpk-1</i> (MAP kinase,
-   III), all links of one chain. V3 was hit only once, a reminder that the screen is not saturated and that
-   other genes of the pathway are probably still unhit. What the test cannot tell you is the <i>order</i> in
-   which the genes act &mdash; that takes double mutants (epistasis), not complementation.`
 },
 {
   kind:'rule', tab:'4 &middot; The rule',

@@ -392,6 +392,8 @@ function normCourse(id, spec){
   }
   const questions = (spec.questions || []).map(q => Object.assign({diff:2}, q));
   return { id, title: spec.title || id, description: spec.description || '', unit, lang: spec.lang || 'en', lectures, questions,
+           defaultOrder: spec.defaultOrder === 'lec' ? 'lec' : 'shuffle',
+           defaultN: Number.isInteger(spec.defaultN) ? spec.defaultN : 10,
            tools: Array.isArray(spec.tools) ? spec.tools : [],
            lint: lintCourse(id, spec, lectures, questions) };
 }
@@ -467,7 +469,9 @@ function useCourse(id){
   byId = {}; bankIdx = {}; QUESTIONS.forEach((q, i) => { byId[q.id] = q; bankIdx[q.id] = i; });
   lecNums = Object.keys(c.lectures).map(Number).sort((a, b) => a - b);
   VER = c.id + '-' + QUESTIONS.length + '-' + hashStr(QUESTIONS.map(q => q.id + ':' + q.q.length + ':' + (q.opts||[]).join('').length).join('|')).toString(36);
-  PR = LS.get(K('prefs'), {sel: lecNums.slice(), n: 10, focus: false});
+  const savedPrefs = LS.get(K('prefs'), null);
+  PR = Object.assign({sel: lecNums.slice(), n: c.defaultN, order: c.defaultOrder, focus: false}, savedPrefs || {});
+  if(!savedPrefs || !savedPrefs.order){ PR.order = c.defaultOrder; if(c.defaultOrder === 'lec' && (!savedPrefs || savedPrefs.n === 10)) PR.n = c.defaultN; }
   if(!Array.isArray(PR.diff)) PR.diff = [1, 2, 3];
   const allTypes = [...new Set(QUESTIONS.map(qType))];
   if(!Array.isArray(PR.types)) PR.types = allTypes.slice();
@@ -491,7 +495,7 @@ const I18N = { de: {
   'Join':'Beitreten', 'Lecturer?':'Dozierende?', 'Open presenter view':'Präsentationsansicht öffnen', 'Practice statistics':'Übungsstatistik',
   'All courses':'Alle Kurse', '← All courses':'← Alle Kurse', 'Back to the list of courses':'Zurück zur Kursliste',
   'Practice':'Üben', 'Choose the lectures you want to be quizzed on.':'Wählen Sie die Vorlesungen, zu denen Sie Fragen möchten.',
-  '{0} questions · {1} answered correctly':'{0} Fragen · {1} richtig beantwortet', 'Number of questions':'Anzahl Fragen', 'All':'Alle', 'Difficulty':'Schwierigkeit',
+  '{0} questions · {1} answered correctly':'{0} Fragen · {1} richtig beantwortet', 'Number of questions':'Anzahl Fragen', 'All':'Alle', 'Order':'Reihenfolge', 'Lecture order':'Vorlesungsreihenfolge', 'Shuffled':'Zufällig', 'Difficulty':'Schwierigkeit',
   'Question types':'Fragetypen', 'single choice':'Single Choice', 'true / false':'Richtig / Falsch', 'short answer':'Kurzantwort',
   'Focus on questions I have not seen or got wrong last time':'Nur Fragen, die ich noch nicht gesehen oder zuletzt falsch beantwortet habe',
   '{0} questions available':'{0} Fragen verfügbar', 'Start':'Start', 'Reset my progress':'Meinen Fortschritt zurücksetzen',
@@ -830,7 +834,8 @@ function practiceSetup(){
   const total = QUESTIONS.filter(q=>PR.sel.includes(q.lec)&&PR.diff.includes(q.diff)&&PR.types.includes(qType(q))).length;
   app.innerHTML='<div class="wrap">'+header()+'<div class="stack"><div><h2>'+T('Practice')+'</h2><p class="muted" style="margin:6px 0 0">'+T('Choose the lectures you want to be quizzed on.')+'</p></div>'+
    '<div class="chips">'+chips+'</div>'+
-   '<div class="card stack"><div class="row"><div class="field"><label for="nq">'+T('Number of questions')+'</label><select id="nq">'+[5,10,20,0].map(v=>'<option value="'+v+'"'+(PR.n===v?' selected':'')+'>'+(v||T('All'))+'</option>').join('')+'</select></div></div>'+
+   '<div class="card stack"><div class="row" style="gap:16px;flex-wrap:wrap"><div class="field"><label for="nq">'+T('Number of questions')+'</label><select id="nq">'+[5,10,20,0].map(v=>'<option value="'+v+'"'+(PR.n===v?' selected':'')+'>'+(v||T('All'))+'</option>').join('')+'</select></div>'+
+   '<div class="field"><label>'+T('Order')+'</label><div class="segs"><button class="seg'+(PR.order==='lec'?' on':'')+'" data-act="porder" data-arg="lec">'+T('Lecture order')+'</button><button class="seg'+(PR.order!=='lec'?' on':'')+'" data-act="porder" data-arg="shuffle">'+T('Shuffled')+'</button></div></div></div>'+
    '<div class="row"><span>'+T('Difficulty')+'</span><div class="segs">'+[1,2,3].map(d=>'<button class="seg'+(PR.diff.includes(d)?' on':'')+'" data-act="pdiff" data-arg="'+d+'">'+'●'.repeat(d)+' '+T(DIFF[d])+'</button>').join('')+'</div></div>'+
    (types.length>1?'<div class="row"><span>'+T('Question types')+'</span><div class="segs">'+types.map(t=>'<button class="seg'+(PR.types.includes(t)?' on':'')+'" data-act="ptype" data-arg="'+t+'">'+T(TYPE_NAME[t])+' ('+QUESTIONS.filter(q=>qType(q)===t).length+')</button>').join('')+'</div></div>':'')+
    '<label class="toggle"><input type="checkbox" id="focus"'+(PR.focus?' checked':'')+'><span>'+T('Focus on questions I have not seen or got wrong last time')+'</span></label>'+
@@ -840,6 +845,7 @@ function practiceSetup(){
   document.getElementById('focus').onchange=e=>{PR.focus=e.target.checked; LS.set(K('prefs'),PR);};
 }
 Object.assign(ACTS,{
+  porder(o){ PR.order=o==='lec'?'lec':'shuffle'; LS.set(K('prefs'),PR); practiceSetup(); },
   pdiff(d){ d=+d; const i=PR.diff.indexOf(d); if(i>=0){ if(PR.diff.length>1) PR.diff.splice(i,1); } else PR.diff.push(d); LS.set(K('prefs'),PR); practiceSetup(); },
   ptype(t){ const i=PR.types.indexOf(t); if(i>=0){ if(PR.types.length>1) PR.types.splice(i,1); } else PR.types.push(t); LS.set(K('prefs'),PR); practiceSetup(); },
   pchip(n){ n=+n; const i=PR.sel.indexOf(n); if(i>=0) PR.sel.splice(i,1); else PR.sel.push(n); LS.set(K('prefs'),PR); practiceSetup(); },
@@ -847,7 +853,8 @@ Object.assign(ACTS,{
   pstart(){
     let pool=QUESTIONS.filter(q=>PR.sel.includes(q.lec)&&PR.diff.includes(q.diff)&&PR.types.includes(qType(q))); const prog=getProg();
     if(PR.focus){ const f=pool.filter(q=>!(prog[q.id]&&prog[q.id].last)); if(f.length>=3) pool=f; }
-    pool=shuffled(pool,Math.random); if(PR.n>0) pool=pool.slice(0,PR.n);
+    if(PR.order!=='lec') pool=shuffled(pool,Math.random);
+    if(PR.n>0) pool=pool.slice(0,PR.n);
     route={name:'practice', stage:'run', pool, i:0, res:[], seed:Math.random().toString(36).slice(2), sel:null, checked:false, tf:{}, crit:{}};
     count('sessions.'+COURSE.id);
     render(); window.scrollTo(0,0);
@@ -1073,7 +1080,7 @@ const joinURL = () => location.origin+location.pathname+'?join='+H.code;
 const N_CHOICES=[3,5,8,10,12,15,20,0];
 function hostLoad(){
   const sv=LS.get(K('host'),{})||{};
-  const c=Object.assign({sel:sv.sel||lecNums.slice(), diff:[1,2,3], mode:'random', n:8, order:'lec', fresh:true, picks:[], drawn:[], seed:Math.random().toString(36).slice(2)}, sv.cfg||{});
+  const c=Object.assign({sel:sv.sel||lecNums.slice(), diff:[1,2,3], mode:'random', n:COURSE&&COURSE.defaultN===0?0:8, order:'lec', fresh:true, picks:[], drawn:[], seed:Math.random().toString(36).slice(2)}, sv.cfg||{});
   H={ code:sv.code||genCode(), cfg:c, plan:Array.isArray(sv.plan)?sv.plan.filter(id=>byId[id]):null, cur:sv.cur||null, phase:sv.phase||'lobby', answers:sv.answers||{},
       rv:sv.rv||1, pres:new Map(), cls:[], status:'connecting', ui:{overlay:null, exp:false}, dead:false };
   if(!H.plan || !H.plan.length) buildPlan(false);

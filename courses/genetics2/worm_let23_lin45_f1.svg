@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 235" role="img" aria-label="Cross-progeny C. elegans hermaphrodite let-23(a)/+ ; lin-45(b)/+">
+<rect width="540" height="235" rx="10" fill="#ffffff"/>
+<style>
+  text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; fill: #18242b; }
+  .title { font-size: 15px; font-weight: 700; }
+  .sub { font-size: 12.5px; fill: #526270; }
+  .lbl { font-size: 13.5px; font-weight: 700; }
+  .gt { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 700; }
+  .it { font-style: italic; }
+  .mut { fill: #c0392b; font-weight: 700; }
+  .wt { fill: #17874f; font-weight: 700; }
+  .acc { fill: #0b6e99; font-weight: 700; }
+</style>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#425466"/>
+  </marker>
+  <marker id="arrRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#c0392b"/>
+  </marker>
+  <marker id="arrOk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#17874f"/>
+  </marker>
+</defs>
+
+  <text x="270" y="26" text-anchor="middle" class="title">Cross-progeny <tspan class="it">C. elegans</tspan> ⚥: <tspan class="gt">let-23(a) / + ; lin-45(b) / +</tspan></text>
+  <rect x="22" y="48" width="336" height="166" rx="14" fill="#f6f9fb" stroke="#64748b" stroke-width="1.8"/>
+
+  <text x="102" y="74" text-anchor="middle" class="lbl">Chromosome II</text>
+  <rect x="42" y="86" width="120" height="22" rx="11" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="102" y="102" text-anchor="middle" class="gt" fill="#c0392b">let-23(a)</text>
+  <rect x="42" y="116" width="120" height="22" rx="11" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/>
+  <text x="102" y="132" text-anchor="middle" class="gt" fill="#17874f">+ (let-23⁺)</text>
+
+  <line x1="190" y1="68" x2="190" y2="148" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text x="190" y="166" text-anchor="middle" class="gt" fill="#64748b">;</text>
+
+  <text x="278" y="74" text-anchor="middle" class="lbl">Chromosome IV</text>
+  <rect x="218" y="86" width="120" height="22" rx="11" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/>
+  <text x="278" y="102" text-anchor="middle" class="gt" fill="#17874f">+ (lin-45⁺)</text>
+  <rect x="218" y="116" width="120" height="22" rx="11" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="278" y="132" text-anchor="middle" class="gt" fill="#c0392b">lin-45(b)</text>
+
+  <text x="190" y="194" text-anchor="middle" class="sub">Both Vul parents carried recessive loss-of-function alleles</text>
+
+  <line x1="366" y1="131" x2="396" y2="131" stroke="#425466" stroke-width="2.2" marker-end="url(#arr)"/>
+  <rect x="402" y="74" width="118" height="114" rx="12" fill="#eef6fa" stroke="#0b6e99" stroke-width="1.8" stroke-dasharray="5 3"/>
+  <text x="461" y="116" text-anchor="middle" font-size="24" font-weight="800" fill="#0b6e99">?</text>
+  <text x="461" y="150" text-anchor="middle" class="lbl" fill="#0b6e99">Vulva</text>
+  <text x="461" y="168" text-anchor="middle" class="sub">phenotype?</text>
+
+</svg>

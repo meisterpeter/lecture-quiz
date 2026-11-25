@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 290" role="img" aria-label="5x5 C. elegans Vul complementation matrix">
+<rect width="520" height="290" rx="10" fill="#ffffff"/>
+<style>
+  text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; fill: #18242b; }
+  .title { font-size: 15px; font-weight: 700; }
+  .sub { font-size: 12.5px; fill: #526270; }
+  .lbl { font-size: 13.5px; font-weight: 700; }
+  .gt { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 700; }
+  .it { font-style: italic; }
+  .mut { fill: #c0392b; font-weight: 700; }
+  .wt { fill: #17874f; font-weight: 700; }
+  .acc { fill: #0b6e99; font-weight: 700; }
+</style>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#425466"/>
+  </marker>
+  <marker id="arrRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#c0392b"/>
+  </marker>
+  <marker id="arrOk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#17874f"/>
+  </marker>
+</defs>
+
+  <text x="260" y="25" text-anchor="middle" class="title">Pairwise crosses of 5 recessive Vulvaless strains (V1–V5)</text>
+  <rect x="22" y="36" width="334" height="236" rx="14" fill="#f6f9fb" stroke="#cbd5e1" stroke-width="1.6"/>
+  <text x="46" y="97" text-anchor="middle" class="lbl">V1</text><text x="104" y="58" text-anchor="middle" class="lbl">V1</text><rect x="83" y="78" width="42" height="28" rx="6" fill="none" stroke="#94a3b8" stroke-dasharray="3 3"/><rect x="135" y="78" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="156" y="97" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="187" y="78" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="208" y="97" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="239" y="78" width="42" height="28" rx="6" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/><text x="260" y="97" text-anchor="middle" font-size="12" font-weight="700" fill="#c0392b">Vul</text><rect x="291" y="78" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="312" y="97" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><text x="46" y="135" text-anchor="middle" class="lbl">V2</text><text x="156" y="58" text-anchor="middle" class="lbl">V2</text><rect x="83" y="116" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="104" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="135" y="116" width="42" height="28" rx="6" fill="none" stroke="#94a3b8" stroke-dasharray="3 3"/><rect x="187" y="116" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="208" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="239" y="116" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="260" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="291" y="116" width="42" height="28" rx="6" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/><text x="312" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="#c0392b">Vul</text><text x="46" y="173" text-anchor="middle" class="lbl">V3</text><text x="208" y="58" text-anchor="middle" class="lbl">V3</text><rect x="83" y="154" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="104" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="135" y="154" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="156" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="187" y="154" width="42" height="28" rx="6" fill="none" stroke="#94a3b8" stroke-dasharray="3 3"/><rect x="239" y="154" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="260" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="291" y="154" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="312" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><text x="46" y="211" text-anchor="middle" class="lbl">V4</text><text x="260" y="58" text-anchor="middle" class="lbl">V4</text><rect x="83" y="192" width="42" height="28" rx="6" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/><text x="104" y="211" text-anchor="middle" font-size="12" font-weight="700" fill="#c0392b">Vul</text><rect x="135" y="192" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="156" y="211" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="187" y="192" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="208" y="211" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="239" y="192" width="42" height="28" rx="6" fill="none" stroke="#94a3b8" stroke-dasharray="3 3"/><rect x="291" y="192" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="312" y="211" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><text x="46" y="249" text-anchor="middle" class="lbl">V5</text><text x="312" y="58" text-anchor="middle" class="lbl">V5</text><rect x="83" y="230" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="104" y="249" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="135" y="230" width="42" height="28" rx="6" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/><text x="156" y="249" text-anchor="middle" font-size="12" font-weight="700" fill="#c0392b">Vul</text><rect x="187" y="230" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="208" y="249" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="239" y="230" width="42" height="28" rx="6" fill="#eaf6ef" stroke="#17874f" stroke-width="1.5"/><text x="260" y="249" text-anchor="middle" font-size="12" font-weight="700" fill="#17874f">WT</text><rect x="291" y="230" width="42" height="28" rx="6" fill="none" stroke="#94a3b8" stroke-dasharray="3 3"/>
+  <rect x="370" y="68" width="132" height="168" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="436" y="92" text-anchor="middle" class="lbl">F1 ⚥ readout</text>
+  <rect x="384" y="108" width="36" height="22" rx="5" fill="#eaf6ef" stroke="#17874f"/><text x="402" y="123" text-anchor="middle" font-size="11.5" class="wt">WT</text>
+  <text x="428" y="123" font-size="11.5">normal vulva</text>
+  <rect x="384" y="142" width="36" height="22" rx="5" fill="#fdecea" stroke="#c0392b"/><text x="402" y="157" text-anchor="middle" font-size="11.5" class="mut">Vul</text>
+  <text x="428" y="157" font-size="11.5">bag of worms</text>
+  <text x="436" y="196" text-anchor="middle" class="lbl" fill="#0b6e99">How many genes?</text>
+  <text x="436" y="214" text-anchor="middle" class="sub">Which strain is alone?</text>
+
+</svg>
