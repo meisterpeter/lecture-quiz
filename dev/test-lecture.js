@@ -14,7 +14,8 @@ const COURSES_BOTH = "QUIZ.courses([{id:'sysbio',file:'sysbio.js',active:true},{
   const server = http.createServer((req, res) => { let u = decodeURIComponent(req.url.split('?')[0]); if (u.endsWith('/')) u += 'index.html';
     if (u === '/courses/courses.js') { res.setHeader('content-type', 'text/javascript'); return res.end(COURSES_BOTH); }
     const f = path.join(root, u); if (!f.startsWith(root) || !fs.existsSync(f)) { res.statusCode = 404; return res.end('nf'); }
-    res.setHeader('content-type', f.endsWith('.js') ? 'text/javascript' : 'text/html'); res.end(fs.readFileSync(f)); }).listen(8091, '127.0.0.1');
+    const mime = { '.js': 'text/javascript', '.html': 'text/html', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml' };
+    res.setHeader('content-type', mime[path.extname(f).toLowerCase()] || 'application/octet-stream'); res.end(fs.readFileSync(f)); }).listen(8091, '127.0.0.1');
   const B = 'http://127.0.0.1:8091/';
   const b = await chromium.launch(); const errors = [];
   const page = async (w, h) => { const ctx = await b.newContext({ viewport: { width: w || 1100, height: h || 900 }, acceptDownloads: true }); const p = await ctx.newPage();
@@ -140,6 +141,24 @@ const COURSES_BOTH = "QUIZ.courses([{id:'sysbio',file:'sysbio.js',active:true},{
   fs.writeFileSync(path.join(shots, 'bad.json'), '{"hello":1}'); await host.setInputFiles('#lcfile', path.join(shots, 'bad.json')); await host.waitForFunction(() => /not a lecture file/.test((document.getElementById('lcpickmsg') || {}).textContent || ''), null, { timeout: 5000 }); check(true, 'a wrong file is rejected with a message');
   // delete
   await host.click('[data-act=lcdelete] >> nth=1'); await host.waitForFunction(() => document.querySelectorAll('[data-act=lcopen]').length === 1, null, { timeout: 5000 }); check(true, 'lecture can be deleted');
+
+  console.log('VISUALS: poll with question + reveal visual in lecture');
+  await host.goto(B + '#lecture'); await host.waitForSelector('#lcnewname');
+  await host.fill('#lcnewname', 'Visual lecture'); await host.selectOption('#lcnewcourse', 'sysbio'); await host.click('[data-act=lcnew]'); await host.waitForSelector('.lcgrid');
+  const vcode = (await host.innerText('.code')).trim(); await online(host);
+  await host.click('[data-act=lcbulk]'); await host.waitForSelector('#lcbulktx');
+  await host.fill('#lcbulktx', 'What does this screen show? [img: genetics2/leu_screen.jpg] [expimg: genetics2/leu_screen_answer.jpg] | *Auxotrophy | Lethality');
+  await host.click('[data-act=lcbulkadd]'); await host.waitForSelector('.lcrow .figtag');
+  check(true, 'bulk poll with [img] + [expimg] shows visual badge in lecture editor');
+  const sv = await page(390, 800); await sv.goto(B + '?join=' + vcode); await sv.waitForSelector('.card.wait h2');
+  await host.click('.lcrow [data-act=lcstartat]'); await host.waitForSelector('.pm.pollm.hasfig .fig.img img');
+  await sv.waitForSelector('.fig.img img', { timeout: 10000 });
+  check((await sv.$$('.fig.img img')).length === 1 && /leu_screen\.jpg/.test(await sv.getAttribute('.fig.img img', 'src')), 'student phone shows question visual and hides reveal visual before reveal');
+  await host.keyboard.press('Space'); await host.waitForSelector('.figswitch');
+  await sv.waitForFunction(() => document.querySelectorAll('.fig.img img').length === 2, null, { timeout: 10000 });
+  check(/leu_screen_answer\.jpg/.test(await host.getAttribute('.pm .fig.img img', 'src')), 'projector switches to reveal visual with figure switcher on reveal');
+  await host.click('[data-act=lcfigview][data-arg="q"]');
+  check(/leu_screen\.jpg/.test(await host.getAttribute('.pm .fig.img img', 'src')), 'lecturer can toggle back to question figure during reveal');
 
   console.log('REGRESSION: existing live quiz + instant poll still start');
   const h2 = await page(1300, 900); await h2.goto(B + '?course=sysbio#host'); await online(h2); check(true, 'quiz presenter still online');

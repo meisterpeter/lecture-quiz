@@ -32,7 +32,7 @@ function lcCleanItem(x){
   if(!x||typeof x!=='object') return null;
   if(x.kind==='quiz'){ const q=String(x.qid||'').slice(0,40); return q?{id:lid(),kind:'quiz',qid:q}:null; }
   const type=['choice','num','word'].includes(x.type)?x.type:null; if(!type) return null;
-  const it={id:lid(),kind:'poll',type,q:String(x.q||'').slice(0,500)};
+  const it=pollCleanVis(x,{id:lid(),kind:'poll',type,q:String(x.q||'').slice(0,500)});
   if(type==='choice'){
     let o=Array.isArray(x.opts)?x.opts.slice(0,8).map(v=>String(v==null?'':v).slice(0,120)):[]; if(o.length<2) o=['','','',''];
     it.opts=o; if(Number.isInteger(x.correct)&&x.correct>=0&&x.correct<o.length) it.correct=x.correct;
@@ -74,7 +74,10 @@ function lcState(){
     if(ph==='r'){ out.counts=lcQuizCounts(it); out.correct=correctOf(q); }
     return out;
   }
-  const out=Object.assign(base,{kind:'poll',ver:LVERS,phase:ph,qid:it.id,item:{id:it.id,type:it.type,q:it.q,opts:it.opts}});
+  const item={id:it.id,type:it.type,q:it.q,opts:it.opts};
+  if(it.img){ item.img=it.img; if(it.cap) item.cap=it.cap; }
+  if((ph==='r'||ph==='c')&&it.expimg){ item.expimg=it.expimg; if(it.expcap) item.expcap=it.expcap; }
+  const out=Object.assign(base,{kind:'poll',ver:LVERS,phase:ph,qid:it.id,item});
   if(ph==='r'||ph==='c') out.res=pollResults(lcPit(it));
   if(ph==='c'&&it.correct!=null) out.correct=it.correct;
   return out;
@@ -138,7 +141,7 @@ function lcStatus(){
 }
 
 /* ---- running the lecture ---- */
-function lcSetPhase(ph,id){ Lc.run.phase=ph; if(id!==undefined) Lc.run.cur=id; if(ph!=='lobby') Lc.run.pph=null; Lc.ui.exp=false; lcSave(); lcBroadcast(); lcPaint(); window.scrollTo(0,0); }
+function lcSetPhase(ph,id){ Lc.run.phase=ph; if(id!==undefined) Lc.run.cur=id; if(ph!=='lobby') Lc.run.pph=null; Lc.ui.exp=false; Lc.ui.qfig=false; lcSave(); lcBroadcast(); lcPaint(); window.scrollTo(0,0); }
 function lcAdvance(){
   const list=lcList(); if(!list.length) return;
   const ph=Lc.run.phase, it=lcCur();
@@ -194,7 +197,7 @@ function lcPickerPaint(){
 let lcPickMsg='';
 
 function lcDraftSpec(){
-  const d=Lc.draft, type=d.type||'choice', n=Math.max(2,Math.min(8,d.n||4)), sp={type, q:(d.q||'').trim()};
+  const d=Lc.draft, type=d.type||'choice', n=Math.max(2,Math.min(8,d.n||4)), sp=pollCleanVis(d,{type, q:(d.q||'').trim()});
   if(type==='choice'){ sp.opts=Array.from({length:n},(_,i)=>((d.opts||[])[i]||'').trim()); if(Number.isInteger(d.correct)&&d.correct>=0&&d.correct<n) sp.correct=d.correct; }
   return sp;
 }
@@ -202,11 +205,11 @@ function lcRow(it,i,N){
   let tx, pill;
   if(it.kind==='quiz'){
     const q=byId[it.qid];
-    if(COURSE&&Lc.course===COURSE.id&&q){ pill='<span class="pill">Quiz</span>'; tx='<b>'+esc(q.id+' · '+(q.topic||''))+'</b><div class="muted small">'+esc(lcPlain(q.q).slice(0,110))+'</div>'; }
+    if(COURSE&&Lc.course===COURSE.id&&q){ pill='<span class="pill">Quiz</span>'; tx='<b>'+esc(q.id+' · '+(q.topic||''))+figBadge(q)+'</b><div class="muted small">'+esc(lcPlain(q.q).slice(0,110))+'</div>'; }
     else { pill='<span class="pill" style="background:var(--bad);color:#fff">Missing</span>'; tx='<b>'+esc(it.qid)+'</b><div class="muted small">Question not found in the course — it is skipped when presenting.</div>'; }
   } else {
     pill='<span class="pill">'+esc(PTYPES[it.type])+'</span>';
-    tx='<b>'+esc(it.q||'(no question text)')+'</b><div class="muted small">'+esc(prepSummary(it))+'</div>';
+    tx='<b>'+esc(it.q||'(no question text)')+pollVisBadge(it)+'</b><div class="muted small">'+esc(prepSummary(it))+'</div>';
   }
   const cur=Lc.run.cur===it.id&&Lc.run.phase!=='lobby';
   return '<div class="lcrow'+(cur?' cur':'')+'" data-lcrow="'+esc(it.id)+'"><span class="n">'+(i+1)+'</span>'+pill+'<div class="tx">'+tx+'</div>'+
@@ -232,7 +235,7 @@ function lcEditPaint(){
   const list=Lc.items.length?Lc.items.map((it,i)=>lcRow(it,i,N)).join(''):'<p class="muted">The lecture is empty. Add polls below or choose quiz questions from the course.</p>';
   const add='<div class="card stack" style="margin-top:14px"><h2 style="margin:0">'+(Lc.editing?'Edit poll':'Add to the lecture')+'</h2>'+
     '<div class="row" style="justify-content:space-between"><div class="segs">'+seg('choice','Choice')+seg('num','Number')+seg('word','Word / phrase')+'</div></div>'+
-    '<textarea id="lcq" data-lc="q" rows="2" class="pin" placeholder="Question (optional – you can also just ask it aloud)">'+esc(d.q||'')+'</textarea>'+
+    '<textarea id="lcq" data-lc="q" rows="2" class="pin" placeholder="Question (optional – you can also just ask it aloud)">'+esc(d.q||'')+'</textarea>'+pollVisEditor('lc',d)+
     (d.type==='choice'?'<div class="row small muted" style="gap:8px">Number of answers '+chips+'</div><div class="popts">'+ins+'</div><div class="muted small">Leave the answer texts empty to let students simply vote A, B, C… Optionally mark the correct answer with ✓: the reveal then has two steps (answers first, then the solution).</div>'
       :'<div class="muted small">'+(d.type==='num'?'Students type a number; the reveal shows the distribution.':'Students type a word or short phrase — each student can add several; the reveal shows a word cloud.')+'</div>')+
     '<div class="row"><button class="btn primary" data-act="lcpadd">'+(Lc.editing?'Save changes':'Add poll')+'</button>'+(Lc.editing?'<button class="btn" data-act="lcpcancel">Cancel</button>':'<button class="btn" data-act="lcbulk">Add several polls…</button><button class="btn" data-act="lcqpick"'+(course?'':' disabled')+'>Add quiz questions…</button>')+'</div>'+
@@ -241,7 +244,7 @@ function lcEditPaint(){
     '<div class="row" style="gap:12px;margin:6px 0 14px"><button class="btn ghost" data-act="lcclose">← Lectures</button><input id="lcname" data-lc="name" class="pin" style="flex:1 1 260px;max-width:460px;font-weight:700" maxlength="60" value="'+esc(Lc.name)+'" aria-label="Lecture name"><span class="pill">'+(course?esc(course.title):'no course')+'</span><span class="sp" style="flex:1"></span><span id="hstat" class="status"></span></div>'+
     '<div class="lcgrid">'+left+'<div style="min-width:0"><div class="card stack"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Lecture <span class="muted small">('+N+' item'+(N===1?'':'s')+(nq?', '+nq+' quiz':'')+')</span></h2></div><div>'+list+'</div></div>'+add+'</div></div></div>';
   if(Lc.ui.overlay==='qr') html+=lcQrOverlay();
-  if(Lc.ui.overlay==='bulk') html+='<div class="overlay" data-act="lcclose2"><div class="modal" style="width:min(92vw,720px)"><h2 style="margin-top:0">Add several polls</h2><p class="muted small">One poll per line. Answers after “|” (empty answers = just a letter; put <code>*</code> before the correct one, e.g. <code>*Prophase</code>). <code>#num</code> / <code>#word</code> at the start makes a number or word-cloud poll. Lines starting with <code>##</code> are ignored.</p><textarea id="lcbulktx" class="pin" rows="10" placeholder="#word What is a transgenic organism?\nWhich is cheapest? | Cas9 | TALEN | ZFN | Meganuclease"></textarea><div class="row" style="margin-top:12px"><button class="btn primary" data-act="lcbulkadd">Add</button><button class="btn" data-act="lcclose2">Cancel</button></div></div></div>';
+  if(Lc.ui.overlay==='bulk') html+='<div class="overlay" data-act="lcclose2"><div class="modal" style="width:min(92vw,720px)"><h2 style="margin-top:0">Add several polls</h2><p class="muted small">One poll per line. Answers after “|” (empty answers = just a letter; put <code>*</code> before the correct one, e.g. <code>*Prophase</code>). <code>#num</code> / <code>#word</code> at the start makes a number or word-cloud poll; add <code>[img: url_or_path]</code> for a visual. Lines starting with <code>##</code> are ignored.</p><textarea id="lcbulktx" class="pin" rows="10" placeholder="#word What is a transgenic organism?\nWhich is cheapest? | Cas9 | TALEN | ZFN | Meganuclease"></textarea><div class="row" style="margin-top:12px"><button class="btn primary" data-act="lcbulkadd">Add</button><button class="btn" data-act="lcclose2">Cancel</button></div></div></div>';
   if(Lc.ui.overlay==='qpick') html+=lcQPickOverlay();
   app.innerHTML=html;
   const bk=document.getElementById('lcbulktx'); if(bk) bk.focus();
@@ -253,7 +256,7 @@ function lcQPickOverlay(){
   const inLec=id=>Lc.items.some(x=>x.kind==='quiz'&&x.qid===id);
   const chips=lecNums.map(n=>{ const k=live.filter(x=>x.lec===n).length; if(!k) return ''; return '<button class="chip'+(sel.includes(n)?' on':'')+'" data-act="lcqchip" data-arg="'+n+'"><b>'+esc(lecLabel(n))+'</b><span>'+k+' questions</span></button>'; }).join('');
   const rows=pool.map(q=>{ const on=inLec(q.id);
-    return '<button class="sq'+(on?' on':'')+'" data-act="lcqtoggle" data-arg="'+esc(q.id)+'"><span class="cb">'+(on?'✓':'')+'</span><span class="sqm"><span class="id">'+esc(q.id)+'</span> <b>'+esc(q.topic)+'</b>'+diffTag(q)+'<span class="sqt">'+q.q+'</span></span></button>'; }).join('');
+    return '<button class="sq'+(on?' on':'')+'" data-act="lcqtoggle" data-arg="'+esc(q.id)+'"><span class="cb">'+(on?'✓':'')+'</span><span class="sqm"><span class="id">'+esc(q.id)+'</span> <b>'+esc(q.topic)+'</b>'+diffTag(q)+figBadge(q)+'<span class="sqt">'+q.q+'</span></span></button>'; }).join('');
   const nOther=QUESTIONS.length-live.length;
   return '<div class="overlay" data-act="lcclose2"><div class="modal setup"><div class="row spread" style="margin-bottom:10px"><h2>Add quiz questions — '+esc(COURSE.title)+'</h2><button class="btn primary" data-act="lcclose2">Done</button></div>'+
     '<p class="muted small" style="margin:0 0 8px">Click a question to add it at the end of the lecture; click again to remove it. '+Lc.items.filter(x=>x.kind==='quiz').length+' quiz question(s) in the lecture.</p>'+
@@ -280,19 +283,20 @@ function lcRunPaint(){
       return '<div class="'+cls+'" style="--pct:'+pct+'%"><span class="k">'+LETTERS[pos]+'</span><span class="t">'+q.opts[oi]+'</span>'+(rev?'<span class="cnt">'+cs[oi]+' · '+pct+'%</span>':'')+'</div>'; }).join('');
     let tally; if(!rev) tally='<div class="anscount"><span>'+T('Answers received:')+'</span><span class="anum" data-ha>'+tot+'</span><span class="muted">'+T('of {0} online','<span data-hc>'+lcPresent()+'</span>')+'</span></div>';
     else { const k=cs[cor], w=tot-k, noans=Math.max(0,lcPresent()-tot); tally='<div class="tally"><span>'+T(tot===1?'{0} answer:':'{0} answers:',tot)+'</span><span class="ok">✓ '+k+' '+T('correct')+(tot?' ('+Math.round(100*k/tot)+' %)':'')+'</span><span class="bad">✗ '+w+' '+T('wrong')+(tot?' ('+Math.round(100*w/tot)+' %)':'')+'</span>'+(noans?'<span class="no">'+noans+' '+T('no answer')+'</span>':'')+'</div>'; }
-    const exp = rev && Lc.ui.exp ? '<div class="feedback" style="margin-top:18px"><div>'+(q.exp||'')+'</div>'+expFigs(q)+srcLine(q)+'</div>' : '';
+    const rfig = projFig(q, rev, Lc.ui, 'lcfigview');
+    const exp = rev && Lc.ui.exp ? '<div class="feedback" style="margin-top:18px"><div>'+(q.exp||'')+'</div>'+srcLine(q)+'</div>' : '';
     html='<div class="proj"><div class="ph"><button class="btn ghost" data-act="lcedit" style="white-space:nowrap" title="Back to the editor (the room stays online)">← Edit</button><span class="lec" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:28vw">'+esc(Lc.name)+'</span><span class="muted">·</span><span style="white-space:nowrap">Item '+idx+' / '+list.length+'</span><span class="pill">Quiz</span>'+diffTag(q)+'<span class="sp"></span>'+
       '<span id="hstat" class="status"></span><span class="pill">'+(rev?T('Results'):'<span data-ha>0</span> '+T('answered'))+' · <span data-hc>'+lcPresent()+'</span> '+T('online')+'</span></div>'+
-      '<div class="pm'+(q.fig?' hasfig':'')+'"><div><div class="qtext">'+q.q+'</div><div class="opts">'+opts+'</div>'+tally+exp+'</div>'+(q.fig?figHTML(q):'')+'</div>'+lcFooter(it,ph,rev)+'</div>';
+      '<div class="pm'+(rfig?' hasfig':'')+'"><div><div class="qtext">'+q.q+'</div><div class="opts">'+opts+'</div>'+tally+exp+'</div>'+rfig+'</div>'+lcFooter(it,ph,rev)+'</div>';
   } else {
-    const rev=ph==='r'||ph==='c', res=pollResults(lcPit(it)), tot=res.n, idx=list.indexOf(it)+1; let body;
+    const rev=ph==='r'||ph==='c', res=pollResults(lcPit(it)), tot=res.n, idx=list.indexOf(it)+1, pfig=pollProjFig(it,rev,Lc.ui,'lcfigview'); let body;
     if(rev) body=pollResBody(lcPit(it),res,null,Lc.lang,ph==='c'?it.correct:null);
     else if(it.type==='choice') body='<div class="opts">'+it.opts.map((o,i)=>'<div class="opt"><span class="k">'+LETTERS[i]+'</span><span class="t">'+(o?esc(o):'')+'</span></div>').join('')+'</div>';
     else body='<div class="muted" style="font-size:clamp(18px,2vw,34px);margin-top:14px">'+(it.type==='num'?'Students are entering a number…':'Students are adding words or short phrases…')+'</div>';
     const isW=it.type==='word', tally=rev?'<div class="tally"><span>'+tot+(isW?' word':' answer')+(tot===1?'':'s')+(isW?' from '+res.p+' '+(res.p===1?'person':'people'):'')+'</span>'+(ph==='c'?(function(){ const k=res.counts[it.correct]||0; return '<span class="ok">✓ '+k+' correct'+(tot?' ('+Math.round(100*k/tot)+' %)':'')+'</span>'; })():'')+'</div>'
       :(isW?'<div class="anscount"><span>Words received:</span><span class="anum" data-ha>'+tot+'</span><span class="muted">from <span data-hp>'+res.p+'</span> of <span data-hc>'+lcPresent()+'</span> online</span></div>':'<div class="anscount"><span>Answers received:</span><span class="anum" data-ha>'+tot+'</span><span class="muted">of <span data-hc>'+lcPresent()+'</span> online</span></div>');
     html='<div class="proj"><div class="ph"><button class="btn ghost" data-act="lcedit" style="white-space:nowrap" title="Back to the editor (the room stays online)">← Edit</button><span class="lec" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:28vw">'+esc(Lc.name)+'</span><span class="muted">·</span><span style="white-space:nowrap">Item '+idx+' / '+list.length+'</span><span class="pill">'+esc(PTYPES[it.type])+'</span><span class="sp"></span><span id="hstat" class="status"></span></div>'+
-      '<div class="pm pollm"><div><div class="qtext">'+(it.q?esc(it.q):'<span class="muted">'+(it.type==='choice'?'Vote!':'Answer on your phone')+'</span>')+'</div>'+body+tally+'</div></div>'+lcFooter(it,ph,rev)+'</div>';
+      '<div class="pm pollm'+(pfig?' hasfig':'')+'"><div><div class="qtext">'+(it.q?esc(it.q):'<span class="muted">'+(it.type==='choice'?'Vote!':'Answer on your phone')+'</span>')+'</div>'+body+tally+'</div>'+pfig+'</div>'+lcFooter(it,ph,rev)+'</div>';
   }
   if(Lc.ui.overlay==='qr') html+=lcQrOverlay();
   else if(Lc.ui.overlay==='list'){
@@ -329,7 +333,7 @@ function lcCSV(){
   lcDownload('lecture-results-'+lcSlug(Lc.name)+'-'+new Date().toISOString().slice(0,10)+'.csv', rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'), 'text/csv');
 }
 function lcExportObj(){ return {format:LFORMAT, version:1, name:Lc.name, code:Lc.code, lang:Lc.lang, course:Lc.course,
-  items:Lc.items.map(x=>{ if(x.kind==='quiz') return {kind:'quiz',qid:x.qid}; const o={kind:'poll',type:x.type,q:x.q}; if(x.type==='choice'){ o.opts=x.opts; if(x.correct!=null) o.correct=x.correct; } return o; })}; }
+  items:Lc.items.map(x=>{ if(x.kind==='quiz') return {kind:'quiz',qid:x.qid}; const o=pollCleanVis(x,{kind:'poll',type:x.type,q:x.q}); if(x.type==='choice'){ o.opts=x.opts; if(x.correct!=null) o.correct=x.correct; } return o; })}; }
 function lcImport(text){
   let o; try{ o=JSON.parse(text); }catch(e){ return 'This file is not valid JSON.'; }
   if(!o||o.format!==LFORMAT||!Array.isArray(o.items)) return 'This is not a lecture file (expected format “'+LFORMAT+'”).';
@@ -342,13 +346,18 @@ function lcImport(text){
   return {id, n:items.length, kept:code===o.code};
 }
 document.addEventListener('change', e=>{
-  const t=e.target; if(!t||t.id!=='lcfile'||route.name!=='lecture') return; const f=t.files&&t.files[0]; if(!f) return;
-  const rd=new FileReader(); rd.onload=()=>{ const r=lcImport(String(rd.result)); if(typeof r==='string'){ lcPickMsg=r; lcPaint(); } else { lcPickMsg=''; lectureOpen(r.id); } }; rd.readAsText(f);
+  const t=e.target; if(!t||route.name!=='lecture') return;
+  if(t.id==='lcfile'){ const f=t.files&&t.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ const r=lcImport(String(rd.result)); if(typeof r==='string'){ lcPickMsg=r; lcPaint(); } else { lcPickMsg=''; lectureOpen(r.id); } }; rd.readAsText(f); return; }
+  if(!Lc) return;
+  if(t.dataset&&t.dataset.lc&&/^(img|expimg)$/.test(t.dataset.lc)){ lcSaveSoon(); lcPaint(); return; }
+  if(t.id==='lcimgfile'||t.id==='lcexpimgfile'){ const f=t.files&&t.files[0]; if(f) readVisualFile(f, u=>{ Lc.draft[t.id==='lcexpimgfile'?'expimg':'img']=u; lcSaveSoon(); lcPaint(); }); }
 });
 document.addEventListener('input', e=>{
   const t=e.target; if(!t||!t.dataset||!t.dataset.lc||!Lc) return; const k=t.dataset.lc;
   if(k==='name'){ Lc.name=t.value.slice(0,60)||'Lecture'; lcSaveMeta(); lcBroadcast(); return; }
-  if(k==='q') Lc.draft.q=t.value; else if(/^o\d+$/.test(k)){ Lc.draft.opts=Lc.draft.opts||[]; Lc.draft.opts[+k.slice(1)]=t.value; }
+  if(k==='q') Lc.draft.q=t.value;
+  else if(k==='img'||k==='cap'||k==='expimg'||k==='expcap') Lc.draft[k]=t.value;
+  else if(/^o\d+$/.test(k)){ Lc.draft.opts=Lc.draft.opts||[]; Lc.draft.opts[+k.slice(1)]=t.value; }
   lcSaveSoon();
 });
 
@@ -369,6 +378,12 @@ Object.assign(ACTS,{
   lcedit(){ Lc.mode='edit'; Lc.ui.overlay=null; lcPaint(); },
   lcnext(){ lcAdvance(); }, lcprev(){ lcBack(); }, lcpause(){ Lc.ui.overlay=null; lcPause(); },
   lcexp(){ Lc.ui.exp=!Lc.ui.exp; lcPaint(); },
+  lcfigview(v){ Lc.ui.qfig=(v==='q'); lcPaint(); },
+  lcimgpick(){ const f=document.getElementById('lcimgfile'); if(f) f.click(); },
+  lcexpimgpick(){ const f=document.getElementById('lcexpimgfile'); if(f) f.click(); },
+  lcimgclr(){ Lc.draft.img=''; Lc.draft.cap=''; lcSaveSoon(); lcPaint(); },
+  lcexpimgclr(){ Lc.draft.expimg=''; Lc.draft.expcap=''; lcSaveSoon(); lcPaint(); },
+  lcexptog(){ Lc.draft.showExp=!(Lc.draft.showExp||Lc.draft.expimg); if(!Lc.draft.showExp){ Lc.draft.expimg=''; Lc.draft.expcap=''; } lcSaveSoon(); lcPaint(); },
   lclist(){ Lc.ui.overlay='list'; lcPaint(); }, lcqr(){ Lc.ui.overlay='qr'; lcPaint(); },
   lcjump(id){ Lc.ui.overlay=null; Lc.mode='run'; lcSetPhase('q',id); },
   lcstartat(id){ Lc.mode='run'; Lc.ui.overlay=null; lcSetPhase('q',id); },
@@ -381,16 +396,16 @@ Object.assign(ACTS,{
   lcpn(v){ Lc.draft.n=+v; lcSaveSoon(); lcPaint(); },
   lcpcorrect(i){ const d=Lc.draft; d.correct=(d.correct===+i)?null:+i; lcSaveSoon(); lcPaint(); },
   lcpadd(){
-    const sp=lcDraftSpec(); if(sp.type==='choice'&&!sp.q&&!sp.opts.some(Boolean)){ Lc.ui.msg='Type a question or answers first.'; lcPaint(); return; }
-    if(sp.type!=='choice'&&!sp.q){ Lc.ui.msg='Type the question first.'; lcPaint(); return; }
+    const sp=lcDraftSpec(); if(sp.type==='choice'&&!sp.q&&!sp.img&&!sp.opts.some(Boolean)){ Lc.ui.msg='Type a question or answers first.'; lcPaint(); return; }
+    if(sp.type!=='choice'&&!sp.q&&!sp.img){ Lc.ui.msg='Type the question first.'; lcPaint(); return; }
     const it=Object.assign({id:Lc.editing||lid(),kind:'poll'},sp);
     if(Lc.editing){ const x=Lc.items.find(y=>y.id===Lc.editing); if(x){ Object.keys(x).forEach(k=>{ if(k!=='id'&&k!=='kind') delete x[k]; }); Object.assign(x,sp); } else Lc.items.push(it); Lc.ui.msg='Changes saved.'; Lc.editing=null; }
     else { Lc.items.push(it); Lc.ui.msg='Poll added at the end of the lecture.'; }
-    Lc.draft={type:Lc.draft.type,q:'',n:Lc.draft.n||4,opts:[],correct:null}; lcSave(); lcBroadcastIfRunning(); lcPaint();
+    Lc.draft={type:Lc.draft.type,q:'',n:Lc.draft.n||4,opts:[],correct:null,img:'',cap:'',expimg:'',expcap:'',showExp:false}; lcSave(); lcBroadcastIfRunning(); lcPaint();
     const q=document.getElementById('lcq'); if(q) q.focus();
   },
   lcpcancel(){ Lc.editing=null; Lc.draft={type:'choice',q:'',n:4,opts:[]}; Lc.ui.msg=''; lcSaveSoon(); lcPaint(); },
-  lcedititem(id){ const x=Lc.items.find(y=>y.id===id); if(!x||x.kind!=='poll') return; Lc.editing=id; Lc.draft={type:x.type,q:x.q||'',n:x.type==='choice'?x.opts.length:4,opts:(x.opts||[]).slice(),correct:x.correct==null?null:x.correct}; Lc.ui.msg=''; lcSaveSoon(); lcPaint(); const q=document.getElementById('lcq'); if(q){ q.focus(); window.scrollTo(0,document.body.scrollHeight); } },
+  lcedititem(id){ const x=Lc.items.find(y=>y.id===id); if(!x||x.kind!=='poll') return; Lc.editing=id; Lc.draft={type:x.type,q:x.q||'',n:x.type==='choice'?x.opts.length:4,opts:(x.opts||[]).slice(),correct:x.correct==null?null:x.correct,img:x.img||'',cap:x.cap||'',expimg:x.expimg||'',expcap:x.expcap||'',showExp:!!x.expimg}; Lc.ui.msg=''; lcSaveSoon(); lcPaint(); const q=document.getElementById('lcq'); if(q){ q.focus(); window.scrollTo(0,document.body.scrollHeight); } },
   lcdel(id){ if(!confirm('Remove this item from the lecture?')) return; Lc.items=Lc.items.filter(y=>y.id!==id); delete Lc.run.answers[id]; if(Lc.run.cur===id){ Lc.run.cur=null; Lc.run.phase='lobby'; Lc.run.pph=null; } if(Lc.editing===id){ Lc.editing=null; } lcSave(); lcBroadcast(); lcPaint(); },
   lcmove(a){ const [id,d]=a.split(':'), i=Lc.items.findIndex(y=>y.id===id), j=i+(+d); if(i<0||j<0||j>=Lc.items.length) return; const x=Lc.items[i]; Lc.items[i]=Lc.items[j]; Lc.items[j]=x; lcSave(); lcPaint(); },
   lcbulk(){ Lc.ui.overlay='bulk'; lcPaint(); },

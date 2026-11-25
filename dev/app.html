@@ -102,7 +102,8 @@ button,input,select{font:inherit;color:inherit}
 .figs{display:grid;gap:10px}
 .figs>.fig{width:100%}
 .fig.img img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line);background:#fff}
-.fig.img .cap{font-size:.82rem;color:var(--muted);margin-top:4px}
+.fig .cap{font-size:.82rem;color:var(--muted);margin-top:4px}
+.fig .cap a{color:var(--accent)}
 .bgx{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--bg)} .bgx>summary{cursor:pointer;font-weight:600;color:var(--accent)} .bgx[open]>summary{margin-bottom:8px} .histtxt{margin-bottom:8px;font-size:.95em}
 .pm .fig.img img{max-height:calc(100vh - 190px);object-fit:contain}
 /* true/false sets and short answers */
@@ -294,6 +295,13 @@ select{padding:8px 10px;border-radius:8px;border:1px solid var(--line);backgroun
 .wchip .wx{border:0;background:transparent;color:var(--muted);cursor:pointer;font:inherit;font-size:1.2em;line-height:1;padding:2px 8px;border-radius:999px}
 .wchip .wx:hover{color:var(--ink)}
 .pollm{grid-template-columns:1fr}
+.pollm.hasfig{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+@media (max-width:900px){.pollm.hasfig{grid-template-columns:1fr}}
+.figtag{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--muted);font-size:.73rem;font-weight:700;vertical-align:middle;text-transform:none;letter-spacing:0}
+.figswitch{display:flex;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.pimgbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pimgprev{display:flex;gap:10px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.pimgprev img{width:56px;height:42px;object-fit:cover;border-radius:6px;border:1px solid var(--line);background:#fff;flex:none}
 .cbtn{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font-weight:800;opacity:.55}
 .cbtn:hover{opacity:1;border-color:var(--ok)} .cbtn.on{background:var(--ok);border-color:var(--ok);color:#fff;opacity:1}
 
@@ -384,6 +392,7 @@ function normCourse(id, spec){
   }
   const questions = (spec.questions || []).map(q => Object.assign({diff:2}, q));
   return { id, title: spec.title || id, description: spec.description || '', unit, lang: spec.lang || 'en', lectures, questions,
+           tools: Array.isArray(spec.tools) ? spec.tools : [],
            lint: lintCourse(id, spec, lectures, questions) };
 }
 function lintCourse(id, spec, lectures, questions){
@@ -410,13 +419,15 @@ function lintCourse(id, spec, lectures, questions){
       if(!q.model) e('short answer needs a model answer (model)');
       if(!Array.isArray(q.criteria) || !q.criteria.length) e('short answer needs criteria: [ … ]');
     }
-    const txt = (q.q || '') + (q.hist && q.hist.text || '') + (q.opts || []).join('') + (q.exp || '') + (q.statements || []).map(st => (st && st.t || '') + (st && st.exp || '')).join('') + (q.model || '') + (q.criteria || []).join('');
+    const allFigs = (q.fig ? [].concat(q.fig) : []).concat(q.expfig ? [].concat(q.expfig) : []).concat(q.hist && q.hist.fig ? [].concat(q.hist.fig) : []);
+    const txt = (q.q || '') + (q.hist && q.hist.text || '') + (q.opts || []).join('') + (q.exp || '') + (q.statements || []).map(st => (st && st.t || '') + (st && st.exp || '')).join('') + (q.model || '') + (q.criteria || []).join('') + allFigs.map(f => f && f.cap || '').join('');
     if(txt.split('$').length % 2 === 0) e('unbalanced $ (LaTeX)');
-    const bare = txt.match(/<(?!\/?(b|i|u|br|p|table|tr|th|td|em|strong|sub|sup|span|code)\b)[A-Za-z]/);
+    const bare = txt.match(/<(?!\/?(b|i|u|br|p|table|tr|th|td|em|strong|sub|sup|span|code|a)\b)[A-Za-z]/);
     if(bare) e('"' + bare[0] + '" would be read as an HTML tag — write \\lt instead of < (and \\gt instead of >) in formulas');
-    for(const F of (q.fig ? [].concat(q.fig) : []).concat(q.expfig ? [].concat(q.expfig) : []).concat(q.hist && q.hist.fig ? [].concat(q.hist.fig) : [])){
+    for(const F of allFigs){
       if(!F || typeof F !== 'object'){ e('fig is not an object'); continue; }
-      if(F.img){ if(typeof F.img !== 'string' || !/\.(jpe?g|png|gif|svg|webp)$/i.test(F.img)) e('img must be a .jpg/.png/.gif/.svg/.webp file name'); continue; }
+      if(F.svg){ if(typeof F.svg !== 'string' || !/<svg[\s>]/i.test(F.svg)) e('svg must contain <svg…>'); continue; }
+      if(F.img){ if(typeof F.img !== 'string' || !(/^data:image\/(png|jpe?g|gif|webp|svg\+xml);base64,/i.test(F.img) || /\.(jpe?g|png|gif|svg|webp)(\?[^"'\s]*)?$/i.test(F.img))) e('img must be a .jpg/.png/.gif/.svg/.webp file name'); continue; }
       if(F.net){ const ns = Object.keys(F.nodes || {}); (F.edges || []).forEach((ed, i) => {
           if(!ns.includes(ed.a)) e('diagram: unknown node ' + ed.a);
           if(!(ns.includes(ed.b) || (/^@\d+$/.test(ed.b) && +ed.b.slice(1) < i))) e('diagram: bad edge target ' + ed.b); }); continue; }
@@ -505,7 +516,7 @@ const I18N = { de: {
   'Answers received:':'Antworten erhalten:', 'of {0} online':'von {0} online', 'answered':'beantwortet', 'online':'online', 'Results':'Ergebnis',
   'Question {0} / {1}':'Frage {0} / {1}', '{0} answers:':'{0} Antworten:', '{0} answer:':'{0} Antwort:', 'correct':'richtig', 'wrong':'falsch', 'no answer':'ohne Antwort',
   'Reveal answer':'Auflösen', 'Next question ▶':'Nächste Frage ▶', 'Finish':'Ende', 'Show explanation':'Erklärung zeigen', 'Hide explanation':'Erklärung ausblenden',
-  'End session ■':'Sitzung beenden ■', '← Back':'← Zurück', 'Back':'Zurück', 'Questions':'Fragen', 'QR code':'QR-Code', 'Join:':'Teilnehmen:', 'code':'Code', 'Figure':'Abbildung',
+  'End session ■':'Sitzung beenden ■', '← Back':'← Zurück', 'Back':'Zurück', 'Questions':'Fragen', 'QR code':'QR-Code', 'Join:':'Teilnehmen:', 'code':'Code', 'Figure':'Abbildung', 'Solution figure':'Lösungsabbildung', 'Question figure':'Fragenabbildung',
   'Practice statistics ↗':'Übungsstatistik ↗'
 } };
 const T = (s, ...a) => { const d = COURSE && I18N[COURSE.lang]; let t = (d && d[s]) || s; a.forEach((v, i) => { t = t.split('{' + i + '}').join(v); }); return t; };
@@ -617,10 +628,41 @@ function netFig(s){
   (s.texts||[]).forEach(t=>labels+='<text x="'+t.x+'" y="'+t.y+'" text-anchor="'+(t.a||'middle')+'" style="'+(t.b?'font-weight:800;':'')+(t.c?'fill:var(--c-'+t.c+');':'')+'font-size:'+(t.s||13)+'px">'+esc(t.t)+'</text>');
   return o+labels+'</svg>';
 }
-const figOne = f => f.img ? '<div class="fig img"><a href="'+esc(COURSE_DIR+f.img)+'" target="_blank" rel="noopener"><img src="'+esc(COURSE_DIR+f.img)+'" alt="'+esc(f.alt||T('Figure'))+'" loading="lazy"></a>'+(f.cap?'<div class="cap">'+esc(f.cap)+'</div>':'')+'</div>'
-  : '<div class="fig'+(f.net?' net':'')+'">'+(f.net?netFig(f):plot(f))+'</div>';
+const imgSrc = u => /^(https?:|data:image\/|\.{0,2}\/|courses\/)/i.test(u) ? u : COURSE_DIR + u;
+const figCap = f => f.cap ? '<div class="cap">'+f.cap+'</div>' : '';
+const figOne = f => {
+  if(f.svg) return '<div class="fig svgfig">'+f.svg+figCap(f)+'</div>';
+  if(f.img){ const u=imgSrc(f.img); return '<div class="fig img">'+(/^data:/i.test(u)?'<img src="'+esc(u)+'" alt="'+esc(f.alt||T('Figure'))+'" loading="lazy">':'<a href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="'+esc(f.alt||T('Figure'))+'" loading="lazy"></a>')+figCap(f)+'</div>'; }
+  return '<div class="fig'+(f.net?' net':'')+'">'+(f.net?netFig(f):plot(f))+figCap(f)+'</div>';
+};
 const bgHTML = q => !q.hist ? '' : '<details class="bgx"><summary>'+esc(q.hist.label||T('Show background'))+'</summary>'+(q.hist.text?'<div class="histtxt">'+q.hist.text+'</div>':'')+(q.hist.fig?'<div class="figs">'+[].concat(q.hist.fig).map(figOne).join('')+'</div>':'')+'</details>';
 const figHTML = q => (!q.fig ? '' : (Array.isArray(q.fig) ? '<div class="figs">'+q.fig.map(figOne).join('')+'</div>' : figOne(q.fig))) + bgHTML(q);
+const figBadge = q => (q && (q.fig || q.expfig)) ? '<span class="figtag" title="'+(q.fig&&q.expfig?'Question + solution visual':q.fig?'Visual':'Solution visual')+'">🖼'+(q.fig&&q.expfig?' 2':'')+'</span>' : '';
+function projFig(q, rev, ui, toggleAct){
+  const hasQ = !!(q.fig || q.hist), hasE = !!q.expfig;
+  if(!rev || !hasE) return hasQ ? figHTML(q) : '';
+  const eList = [].concat(q.expfig), eHTML = eList.length > 1 ? '<div class="figs">'+eList.map(figOne).join('')+'</div>' : figOne(eList[0]);
+  if(!hasQ) return eHTML;
+  const showQ = !!(ui && ui.qfig);
+  const sw = '<div class="figswitch"><button class="seg'+(!showQ?' on':'')+'" data-act="'+toggleAct+'" data-arg="exp">'+T('Solution figure')+'</button><button class="seg'+(showQ?' on':'')+'" data-act="'+toggleAct+'" data-arg="q">'+T('Question figure')+'</button></div>';
+  return '<div class="figs">'+sw+(showQ ? figHTML(q) : eList.map(figOne).join(''))+'</div>';
+}
+function readVisualFile(file, cb){
+  if(!file || !/^image\//i.test(file.type||'')) return;
+  if(/svg/i.test(file.type) && file.size < 90000){ const r=new FileReader(); r.onload=()=>cb(String(r.result||'')); r.readAsDataURL(file); return; }
+  const u=URL.createObjectURL(file), im=new Image();
+  im.onload=()=>{
+    URL.revokeObjectURL(u);
+    const max=960, sc=Math.min(1, max/Math.max(im.width||1, im.height||1));
+    const w=Math.max(1, Math.round(im.width*sc)), h=Math.max(1, Math.round(im.height*sc));
+    const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+    const ctx=cv.getContext('2d'); ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,w,h); ctx.drawImage(im,0,0,w,h);
+    let out=cv.toDataURL('image/webp',0.8); if(!/^data:image\/webp/i.test(out)||out.length>180000) out=cv.toDataURL('image/jpeg',0.78);
+    cb(out);
+  };
+  im.onerror=()=>URL.revokeObjectURL(u);
+  im.src=u;
+}
 
 /* ====================================================================
    ROUTING
@@ -745,24 +787,27 @@ Object.assign(ACTS, {
    HOME
    ==================================================================== */
 function viewHome(){
+  const tools = (COURSE.tools && COURSE.tools.length) ? '<div class="card stack" style="margin-top:16px"><h2>Interactive exercises</h2><div class="chips">'+COURSE.tools.map(t=>'<a class="chip" style="flex:1 1 260px;text-decoration:none;color:inherit" href="'+esc(t.href)+'"><b>'+esc(t.title)+'</b><span>'+esc(t.desc||'')+'</span></a>').join('')+'</div></div>' : '';
   app.innerHTML = '<div class="wrap">'+header()+
   '<div class="hero"><h1>'+esc(COURSE.title)+' — '+T('Quiz')+'</h1><p>'+(COURSE.description?esc(COURSE.description):T('Exam-style multiple-choice questions on the lecture material, with explanations. Practise on your own, or join the live quiz during the lecture.'))+'</p></div>'+
   '<div class="grid2">'+
     '<div class="card choice"><h2>'+T('Practise on your own')+'</h2><p>'+T('{0} questions across {1} topics. Pick lectures, get instant feedback and explanations. Your progress stays in this browser.',QUESTIONS.length,lecNums.length)+'</p><button class="btn primary big" data-act="practice">'+T('Start practising')+'</button></div>'+
     '<div class="card choice"><h2>'+T('Join the live quiz')+'</h2><p>'+T('Scan the QR code on the screen, or type the room code shown by your lecturer.')+'</p><div class="row"><input id="code" class="codein" maxlength="8" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn primary big" data-act="joinGo">'+T('Join')+'</button></div></div>'+
-  '</div>'+
+  '</div>'+tools+
   '<p class="muted small" style="margin-top:28px">'+(activeCourses().length>1?'<button class="link" data-act="allcourses">'+T('All courses')+'</button> · ':'')+'<button class="link" data-act="lecturer">'+T('Lecturer')+'</button></p><p class="muted small">Version '+esc(BUILD)+'</p></div>';
   const inp=document.getElementById('code'); inp.addEventListener('keydown',e=>{ if(e.key==='Enter') ACTS.joinGo(); });
 }
 
 function viewCourses(){
-  const MICRO_LINK = '<a class="chip" style="flex:1 1 300px;text-decoration:none;color:inherit" href="https://btowbin.github.io/lecture-quiz/microscopy/"><b>Fluorescence Microscopy</b><span>Interactive light path simulator</span></a>';
+  const EXTRA_LINKS = '<a class="chip" style="flex:1 1 300px;text-decoration:none;color:inherit" href="complementation/"><b>Complementation Lab</b><span>Interactive crosses in yeast, flies &amp; C. elegans</span></a>'+
+    '<a class="chip" style="flex:1 1 300px;text-decoration:none;color:inherit" href="crispr/"><b>CRISPR Design</b><span>Interactive GFP knock-in design</span></a>'+
+    '<a class="chip" style="flex:1 1 300px;text-decoration:none;color:inherit" href="microscopy/"><b>Fluorescence Microscopy</b><span>Interactive light path simulator</span></a>';
   const act = activeCourses();
   const cards = act.map(c => '<button class="chip" style="flex:1 1 300px" data-act="pickcourse" data-arg="'+esc(c.id)+'"><b>'+esc(c.title)+'</b><span>'+c.questions.length+' questions · '+Object.keys(c.lectures).length+' '+esc(c.unit.toLowerCase())+'s</span></button>').join('');
   app.innerHTML = '<div class="wrap">'+header()+
     '<div class="hero"><h1>'+esc(TITLE)+'</h1><p>Choose your course.</p></div>'+
     (route.missing ? '<div class="banner">The course “'+esc(route.missing)+'” is not available (not activated, or its file failed to load).</div>' : '')+
-    (act.length ? '<div class="chips">'+cards+MICRO_LINK+'</div>' : '<div class="card">No course is activated yet. Add a course file to <code>courses/</code> and switch it on in <code>courses/courses.js</code>.</div>')+
+    (act.length ? '<div class="chips">'+cards+EXTRA_LINKS+'</div>' : '<div class="card">No course is activated yet. Add a course file to <code>courses/</code> and switch it on in <code>courses/courses.js</code>.</div>')+
     '<div class="card choice" style="margin-top:20px"><h2>Join a live quiz</h2><p>Scan the QR code on the screen, or type the room code shown by your lecturer.</p><div class="row"><input id="code" class="codein" maxlength="8" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn primary big" data-act="joinGo">Join</button></div></div>'+
     '<p class="muted small" style="margin-top:28px"><button class="link" data-act="lecturer">Lecturer</button> · Version '+esc(BUILD)+'</p></div>';
   const inp=document.getElementById('code'); inp.addEventListener('keydown',e=>{ if(e.key==='Enter') ACTS.joinGo(); });
@@ -1142,7 +1187,7 @@ function hostStatus(){
   el.innerHTML='<i class="dot '+cls+'"></i> '+txt;
 }
 function setPhase(ph,id){
-  H.phase=ph; if(id!==undefined) H.cur=id;
+  H.phase=ph; if(id!==undefined) H.cur=id; H.ui.qfig=false;
   hostSave(); broadcast(); hostPaint();
 }
 function hostAdvance(){
@@ -1172,6 +1217,7 @@ function hostKey(e){
 Object.assign(ACTS,{
   hnext(){ hostAdvance(); }, hprev(){ hostBack(); },
   hexp(){ H.ui.exp=!H.ui.exp; hostPaint(); },
+  hfigview(v){ H.ui.qfig=(v==='q'); hostPaint(); },
   hqr(){ H.ui.overlay='qr'; hostPaint(); },
   hlist(){ H.ui.overlay='list'; hostPaint(); },
   hclose(){ H.ui.overlay=null; hostPaint(); },
@@ -1238,10 +1284,11 @@ function hostPaint(){
     }).join('');
     let tally=''; if(!rev){ tally='<div class="anscount"><span>'+T('Answers received:')+'</span><span class="anum" data-ha>'+tot+'</span><span class="muted">'+T('of {0} online','<span data-hc>'+presentCount()+'</span>')+'</span></div>'; }
     else { const k=cs[cor], w=tot-k, noans=Math.max(0,presentCount()-tot); tally='<div class="tally"><span>'+T(tot===1?'{0} answer:':'{0} answers:',tot)+'</span><span class="ok">✓ '+k+' '+T('correct')+(tot?' ('+Math.round(100*k/tot)+' %)':'')+'</span><span class="bad">✗ '+w+' '+T('wrong')+(tot?' ('+Math.round(100*w/tot)+' %)':'')+'</span>'+(noans?'<span class="no">'+noans+' '+T('no answer')+'</span>':'')+'</div>'; }
-    const exp = rev && H.ui.exp ? '<div class="feedback" style="margin-top:18px"><div>'+(q.exp||'')+'</div>'+expFigs(q)+srcLine(q)+'</div>' : '';
+    const rfig = projFig(q, rev, H.ui, 'hfigview');
+    const exp = rev && H.ui.exp ? '<div class="feedback" style="margin-top:18px"><div>'+(q.exp||'')+'</div>'+srcLine(q)+'</div>' : '';
     html='<div class="proj"><div class="ph"><span class="lec">'+esc(lecLabel(q.lec))+'</span><span class="muted">·</span><span style="white-space:nowrap">'+T('Question {0} / {1}',idx,list.length)+'</span>'+diffTag(q)+'<span class="sp"></span>'+
       '<span id="hstat" class="status"></span><span class="pill">'+(rev?T('Results'):'<span data-ha>0</span> '+T('answered'))+' · <span data-hc>'+presentCount()+'</span> '+T('online')+'</span></div>'+
-      '<div class="pm'+(q.fig?' hasfig':'')+'"><div><div class="qtext">'+q.q+'</div><div class="opts">'+opts+'</div>'+tally+exp+'</div>'+(q.fig?figHTML(q):'')+'</div>'+
+      '<div class="pm'+(rfig?' hasfig':'')+'"><div><div class="qtext">'+q.q+'</div><div class="opts">'+opts+'</div>'+tally+exp+'</div>'+rfig+'</div>'+
       '<div class="pf"><span class="info">v'+esc(BUILD)+' · '+T('Join:')+' <b>'+esc(location.host+location.pathname.replace(/index\.html$/,''))+'</b> · '+T('code')+' <b>'+H.code+'</b></span>'+
       '<button class="btn" data-act="hprev" title="← Back">◀</button>'+
       '<button class="btn primary" data-act="hnext" title="Space / →">'+T(rev?(idx<list.length?'Next question ▶':'Finish'):'Reveal answer')+'</button>'+
@@ -1257,7 +1304,7 @@ function hostPaint(){
   } else if(H.ui.overlay==='list'){
     const cur=hostQ();
     const items=list.map(x=>{ const a=H.answers[x.id], n=a?Object.keys(a).length:0; let st=''; if(n){ const c=counts(x); st=Math.round(100*c[correctOf(x)]/n)+' % of '+n; }
-      return '<button class="qli'+(cur&&cur.id===x.id?' cur':'')+'" data-act="hjump" data-arg="'+x.id+'"><span class="id">'+x.id+'</span><span class="tp">'+esc(x.topic)+'</span><span class="st">'+st+'</span></button>'; }).join('');
+      return '<button class="qli'+(cur&&cur.id===x.id?' cur':'')+'" data-act="hjump" data-arg="'+x.id+'"><span class="id">'+x.id+'</span><span class="tp">'+esc(x.topic)+figBadge(x)+'</span><span class="st">'+st+'</span></button>'; }).join('');
     html+='<div class="overlay" data-act="hclose"><div class="modal"><div class="row spread" style="margin-bottom:12px"><h2>Questions</h2><div class="row"><button class="btn" data-act="hcsv">Download results (CSV)</button><button class="btn" data-act="hlobby">Lobby / QR</button><button class="btn primary" data-act="hclose">Close</button></div></div><div class="row" style="margin-bottom:12px"><span class="muted small">'+planSummary()+'</span><button class="btn" data-act="hsetup">Change questions…</button></div><div class="qlist">'+items+'</div><p class="muted small" style="margin-top:14px"><button class="link" data-act="hreset">Clear collected answers</button></p></div></div>';
   }
   const oldM=app.querySelector('.modal'), keep=oldM?oldM.scrollTop:0;
@@ -1273,7 +1320,7 @@ function planSummary(){
 function qStat(id){ const a=H.answers[id], n=a?Object.keys(a).length:0; if(!n) return ''; const q=byId[id], k=counts(q)[correctOf(q)]; return '<span class="st" title="asked before">asked · '+Math.round(100*k/n)+' % of '+n+'</span>'; }
 function setupRow(q, on, act){
   return '<button class="sq'+(on?' on':'')+'"'+(act?' data-act="hpick" data-arg="'+q.id+'"':'')+'>'+(act?'<span class="cb">'+(on?'✓':'')+'</span>':'')+
-    '<span class="sqm"><span class="id">'+q.id+'</span> <b>'+esc(q.topic)+'</b>'+diffTag(q)+qStat(q.id)+'<span class="sqt">'+q.q+'</span></span></button>';
+    '<span class="sqm"><span class="id">'+q.id+'</span> <b>'+esc(q.topic)+'</b>'+diffTag(q)+figBadge(q)+qStat(q.id)+'<span class="sqt">'+q.q+'</span></span></button>';
 }
 function setupHTML(){
   const c=H.cfg, pool=hostPool();
@@ -1399,6 +1446,7 @@ async function captureScript(url){
   const got=CAPTURE; CAPTURE=null; return {ok, syntax, got};
 }
 async function checkFile(file){
+  const out=document.getElementById('ckout'); if(out) out.innerHTML='';
   const text=await file.text(), url=URL.createObjectURL(new Blob([text],{type:'text/javascript'}));
   const res=await captureScript(url); URL.revokeObjectURL(url); checkReport(file.name, res);
 }

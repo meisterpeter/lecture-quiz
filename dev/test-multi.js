@@ -75,7 +75,7 @@ const COURSES_BOTH = "QUIZ.courses([{id:'sysbio',file:'sysbio.js',active:true},{
   console.log('\nerrors:', errors.length); errors.slice(0, 10).forEach(e => console.log('  ', e));
   check(errors.length === 0, 'no page errors');
   console.log('LECTURER PASSWORD');
-  const lk = await page(); await lk.addInitScript(() => { delete window.SBQ_LECT_HASH; });
+  const lk = await page(); await lk.addInitScript(() => { window.__LOCKED = true; window.SBQ_LECT_HASH = '847e70d73b2fa8c8e657d74e0b54ef990aae44f11a0f29bcecdf61f6686f5015'; });
   await lk.goto(B + '?course=sysbio'); await lk.waitForSelector('.hero');
   const foot = await lk.innerText('body'); check(!/presenter view|Practice statistics|Check/i.test(foot.replace(/Check your/gi, '')) , 'students see no lecturer links');
   for (const h of ['#host', '#stats', '#check']) { await lk.goto(B + '?course=sysbio' + h); await lk.reload(); await lk.waitForSelector('#lpw'); check(true, h + ' asks for the password'); }

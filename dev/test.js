@@ -34,9 +34,12 @@ async function newPage(ctx, errors, tag, brokers) {
 
 (async () => {
   for (const port of [9001, 9002]) { const a = aedesF(); const srv = http.createServer().listen(port, '127.0.0.1'); wsStream.createServer({ server: srv }, a.handle); }
-  const server = http.createServer((req, res) => { let u = decodeURIComponent(req.url.split('?')[0]); if (u.endsWith('/')) u += 'index.html'; const f = path.join(root, u);
+  const server = http.createServer((req, res) => { let u = decodeURIComponent(req.url.split('?')[0]); if (u.endsWith('/')) u += 'index.html';
+    if (u === '/courses/courses.js') { res.setHeader('content-type', 'text/javascript'); return res.end("QUIZ.courses([{id:'sysbio',file:'sysbio.js',active:true}]);"); }
+    const f = path.join(root, u);
     if (!f.startsWith(root) || !fs.existsSync(f)) { res.statusCode = 404; return res.end('not found'); }
-    res.setHeader('content-type', f.endsWith('.js') ? 'text/javascript' : 'text/html'); res.end(fs.readFileSync(f)); }).listen(8080, '127.0.0.1');
+    const mime = { '.js': 'text/javascript', '.html': 'text/html', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.svg': 'image/svg+xml' };
+    res.setHeader('content-type', mime[path.extname(f).toLowerCase()] || 'application/octet-stream'); res.end(fs.readFileSync(f)); }).listen(8080, '127.0.0.1');
   const browser = await chromium.launch({ args: ['--disable-features=WebRtcHideLocalIpsWithMdns'] });
   const errors = [];
   const BASE = 'http://127.0.0.1:8080/';
