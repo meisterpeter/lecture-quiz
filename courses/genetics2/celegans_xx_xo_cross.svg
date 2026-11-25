@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 225" role="img" aria-label="C. elegans XX hermaphrodite and X0 male gametes">
+<rect width="540" height="225" rx="10" fill="#ffffff"/>
+<style>
+  text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; fill: #18242b; }
+  .title { font-size: 15px; font-weight: 700; }
+  .sub { font-size: 12.5px; fill: #526270; }
+  .lbl { font-size: 13.5px; font-weight: 700; }
+  .gt { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 700; }
+  .it { font-style: italic; }
+  .mut { fill: #c0392b; font-weight: 700; }
+  .wt { fill: #17874f; font-weight: 700; }
+  .acc { fill: #0b6e99; font-weight: 700; }
+</style>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#425466"/>
+  </marker>
+  <marker id="arrRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#c0392b"/>
+  </marker>
+  <marker id="arrOk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#17874f"/>
+  </marker>
+</defs>
+
+  <text x="270" y="25" text-anchor="middle" class="title"><tspan class="it">C. elegans</tspan> mating plate: selfing vs cross-fertilisation</text>
+
+  <!-- Selfing hermaphrodite -->
+  <rect x="20" y="46" width="234" height="160" rx="10" fill="#f6f9fb" stroke="#cbd5e1"/>
+  <text x="137" y="70" text-anchor="middle" class="lbl">Hermaphrodite (⚥, XX)</text>
+  <text x="137" y="94" text-anchor="middle" class="sub">Makes oocytes (<tspan class="gt">X</tspan>) + own sperm (<tspan class="gt">X</tspan>)</text>
+  <rect x="42" y="110" width="190" height="38" rx="8" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="137" y="134" text-anchor="middle" font-size="12.5">Self-fertilisation: <tspan class="gt">X</tspan> + <tspan class="gt">X</tspan> → <tspan class="gt">XX</tspan></text>
+  <text x="137" y="172" text-anchor="middle" class="sub">(X non-disjunction ~0.1%)</text>
+
+  <!-- Outcross with male -->
+  <rect x="276" y="46" width="244" height="160" rx="10" fill="#eef6fa" stroke="#0b6e99" stroke-width="1.5"/>
+  <text x="398" y="70" text-anchor="middle" class="lbl" fill="#0b6e99">Cross: ⚥ (XX) × Male (♂, X0)</text>
+  <text x="398" y="94" text-anchor="middle" class="sub">Male meiosis produces two sperm classes:</text>
+  <rect x="304" y="108" width="84" height="36" rx="8" fill="#ffffff" stroke="#0b6e99"/>
+  <text x="346" y="131" text-anchor="middle" class="gt">50% X</text>
+  <rect x="408" y="108" width="84" height="36" rx="8" fill="#ffffff" stroke="#0b6e99"/>
+  <text x="450" y="131" text-anchor="middle" class="gt">50% 0</text>
+  <text x="398" y="172" text-anchor="middle" class="lbl" fill="#0b6e99">How do you spot cross-progeny?</text>
+
+</svg>

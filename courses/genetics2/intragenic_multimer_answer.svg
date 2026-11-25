@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 240" role="img" aria-label="Mixed homomultimer restores partial function">
+<rect width="540" height="240" rx="10" fill="#ffffff"/>
+<style>
+  text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; fill: #18242b; }
+  .title { font-size: 15px; font-weight: 700; }
+  .sub { font-size: 12.5px; fill: #526270; }
+  .lbl { font-size: 13.5px; font-weight: 700; }
+  .gt { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 700; }
+  .it { font-style: italic; }
+  .mut { fill: #c0392b; font-weight: 700; }
+  .wt { fill: #17874f; font-weight: 700; }
+  .acc { fill: #0b6e99; font-weight: 700; }
+</style>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#425466"/>
+  </marker>
+  <marker id="arrRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#c0392b"/>
+  </marker>
+  <marker id="arrOk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#17874f"/>
+  </marker>
+</defs>
+
+  <text x="270" y="25" text-anchor="middle" class="title">Homomultimer mechanism of intragenic complementation</text>
+
+  <!-- Homodimer x-1 / x-1 -->
+  <rect x="18" y="46" width="156" height="174" rx="10" fill="#fff8f7" stroke="#e2b4af"/>
+  <text x="96" y="68" text-anchor="middle" class="gt">x-1 / x-1</text>
+  <!-- subunit 1 -->
+  <rect x="44" y="86" width="50" height="32" rx="8" fill="#fdecea" stroke="#c0392b" stroke-width="1.8"/>
+  <text x="69" y="106" text-anchor="middle" font-size="11.5" class="mut">D1 ✗</text>
+  <rect x="94" y="86" width="54" height="32" rx="8" fill="#eaf6ef" stroke="#17874f" stroke-width="1.8"/>
+  <text x="121" y="106" text-anchor="middle" font-size="11.5" class="wt">D2 ✓</text>
+  <!-- subunit 2 -->
+  <rect x="44" y="122" width="50" height="32" rx="8" fill="#fdecea" stroke="#c0392b" stroke-width="1.8"/>
+  <text x="69" y="142" text-anchor="middle" font-size="11.5" class="mut">D1 ✗</text>
+  <rect x="94" y="122" width="54" height="32" rx="8" fill="#eaf6ef" stroke="#17874f" stroke-width="1.8"/>
+  <text x="121" y="142" text-anchor="middle" font-size="11.5" class="wt">D2 ✓</text>
+  <text x="96" y="182" text-anchor="middle" class="mut">Inactive dimer</text>
+  <text x="96" y="200" text-anchor="middle" class="sub">(no intact Domain 1)</text>
+
+  <!-- Homodimer x-2 / x-2 -->
+  <rect x="192" y="46" width="156" height="174" rx="10" fill="#fff8f7" stroke="#e2b4af"/>
+  <text x="270" y="68" text-anchor="middle" class="gt">x-2 / x-2</text>
+  <rect x="218" y="86" width="50" height="32" rx="8" fill="#eaf6ef" stroke="#17874f" stroke-width="1.8"/>
+  <text x="243" y="106" text-anchor="middle" font-size="11.5" class="wt">D1 ✓</text>
+  <rect x="268" y="86" width="54" height="32" rx="8" fill="#fdecea" stroke="#c0392b" stroke-width="1.8"/>
+  <text x="295" y="106" text-anchor="middle" font-size="11.5" class="mut">D2 ✗</text>
+  <rect x="218" y="122" width="50" height="32" rx="8" fill="#eaf6ef" stroke="#17874f" stroke-width="1.8"/>
+  <text x="243" y="142" text-anchor="middle" font-size="11.5" class="wt">D1 ✓</text>
+  <rect x="268" y="122" width="54" height="32" rx="8" fill="#fdecea" stroke="#c0392b" stroke-width="1.8"/>
+  <text x="295" y="142" text-anchor="middle" font-size="11.5" class="mut">D2 ✗</text>
+  <text x="270" y="182" text-anchor="middle" class="mut">Inactive dimer</text>
+  <text x="270" y="200" text-anchor="middle" class="sub">(no intact Domain 2)</text>
+
+  <!-- Mixed heterodimer x-1 / x-2 -->
+  <rect x="366" y="46" width="156" height="174" rx="10" fill="#f2fbf6" stroke="#17874f" stroke-width="2"/>
+  <text x="444" y="68" text-anchor="middle" class="gt">x-1 / x-2</text>
+  <rect x="392" y="86" width="50" height="32" rx="8" fill="#fdecea" stroke="#c0392b" stroke-width="1.8"/>
+  <text x="417" y="106" text-anchor="middle" font-size="11.5" class="mut">D1 ✗</text>
+  <rect x="442" y="86" width="54" height="32" rx="8" fill="#eaf6ef" stroke="#17874f" stroke-width="1.8"/>
+  <text x="469" y="106" text-anchor="middle" font-size="11.5" class="wt">D2 ✓</text>
+  <rect x="392" y="122" width="50" height="32" rx="8" fill="#eaf6ef" stroke="#17874f" stroke-width="1.8"/>
+  <text x="417" y="142" text-anchor="middle" font-size="11.5" class="wt">D1 ✓</text>
+  <rect x="442" y="122" width="54" height="32" rx="8" fill="#fdecea" stroke="#c0392b" stroke-width="1.8"/>
+  <text x="469" y="142" text-anchor="middle" font-size="11.5" class="mut">D2 ✗</text>
+  <text x="444" y="182" text-anchor="middle" class="wt">Partly active!</text>
+  <text x="444" y="200" text-anchor="middle" class="sub">D1 ✓ + D2 ✓ in complex</text>
+
+</svg>

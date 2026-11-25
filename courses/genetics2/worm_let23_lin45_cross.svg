@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 235" role="img" aria-label="Cross between let-23 (Chr II) and lin-45 (Chr IV) worm mutants">
+<rect width="540" height="235" rx="10" fill="#ffffff"/>
+<style>
+  text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; fill: #18242b; }
+  .title { font-size: 15px; font-weight: 700; }
+  .sub { font-size: 12.5px; fill: #526270; }
+  .lbl { font-size: 13.5px; font-weight: 700; }
+  .gt { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 700; }
+  .it { font-style: italic; }
+  .mut { fill: #c0392b; font-weight: 700; }
+  .wt { fill: #17874f; font-weight: 700; }
+  .acc { fill: #0b6e99; font-weight: 700; }
+</style>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#425466"/>
+  </marker>
+  <marker id="arrRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#c0392b"/>
+  </marker>
+  <marker id="arrOk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#17874f"/>
+  </marker>
+</defs>
+
+  <text x="270" y="25" text-anchor="middle" class="title">Cross B: <tspan class="it">let-23</tspan> (Chr II) hermaphrodite × <tspan class="it">lin-45</tspan> (Chr IV) male</text>
+
+  <rect x="18" y="46" width="188" height="168" rx="10" fill="#fff8f7" stroke="#e2b4af"/>
+  <text x="112" y="70" text-anchor="middle" class="lbl">w1 ⚥ mother (Vul)</text>
+  <text x="30" y="108" class="sub">II:</text>
+  <rect x="56" y="92" width="136" height="22" rx="11" fill="#fdecea" stroke="#c0392b"/>
+  <text x="124" y="108" text-anchor="middle" class="gt" fill="#c0392b">let-23(a) / let-23(a)</text>
+  <text x="30" y="150" class="sub">IV:</text>
+  <rect x="56" y="134" width="136" height="22" rx="11" fill="#eaf6ef" stroke="#17874f"/>
+  <text x="124" y="150" text-anchor="middle" class="gt" fill="#17874f">+ / + (WT lin-45)</text>
+
+  <text x="223" y="130" text-anchor="middle" font-size="22" font-weight="700" fill="#526270">×</text>
+
+  <rect x="242" y="46" width="188" height="168" rx="10" fill="#fff8f7" stroke="#e2b4af"/>
+  <text x="336" y="70" text-anchor="middle" class="lbl">w2 ♂ father (Vul)</text>
+  <text x="254" y="108" class="sub">II:</text>
+  <rect x="280" y="92" width="136" height="22" rx="11" fill="#eaf6ef" stroke="#17874f"/>
+  <text x="348" y="108" text-anchor="middle" class="gt" fill="#17874f">+ / + (WT let-23)</text>
+  <text x="254" y="150" class="sub">IV:</text>
+  <rect x="280" y="134" width="136" height="22" rx="11" fill="#fdecea" stroke="#c0392b"/>
+  <text x="348" y="150" text-anchor="middle" class="gt" fill="#c0392b">lin-45(b) / lin-45(b)</text>
+
+  <line x1="436" y1="130" x2="458" y2="130" stroke="#425466" stroke-width="2.2" marker-end="url(#arr)"/>
+  <rect x="464" y="70" width="62" height="120" rx="10" fill="#eef6fa" stroke="#0b6e99" stroke-width="1.8" stroke-dasharray="5 3"/>
+  <text x="495" y="112" text-anchor="middle" class="lbl" fill="#0b6e99">F1 ⚥</text>
+  <text x="495" y="146" text-anchor="middle" font-size="24" font-weight="800" fill="#0b6e99">?</text>
+
+</svg>

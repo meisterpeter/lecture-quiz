@@ -66,6 +66,18 @@ table.cross td{padding:0}
 .opt.right{background:var(--okbg);color:var(--ok);border-color:var(--ok)}
 .opt.wrong{background:var(--badbg);color:var(--bad);border-color:var(--bad)}
 .gt{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.95em}
+.cfig{margin:10px 0 6px;max-width:560px}
+.cfigs{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin:10px 0 6px;align-items:start}
+.cfigs .cfig{margin:0;max-width:none}
+.cfig img,.cfig svg{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line);background:var(--card)}
+.cfig.photo img{background:#fff;max-height:310px;object-fit:contain}
+.cfig .cap{font-size:.82rem;color:var(--muted);margin-top:5px;line-height:1.4}
+.cfig .cap a{color:var(--accent)}
+.split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(250px,.95fr);gap:18px;align-items:start}
+@media (max-width:740px){.split{grid-template-columns:1fr}}
+.split>.cfig,.split>.cfigs{margin:0;max-width:none}
+.hdr-actions{display:flex;gap:8px;align-items:center}
+a.btn{text-decoration:none;font-size:.88rem;padding:6px 12px}
 footer{color:var(--muted);font-size:.82rem;margin:18px 0 8px}
 </style>
 </head>
@@ -76,7 +88,10 @@ footer{color:var(--muted);font-size:.82rem;margin:18px 0 8px}
     <h1>Complementation: one gene or two?</h1>
     <div class="sub">Genetics II &middot; start with two mutants, then sort out five</div>
   </div>
-  <button class="ghost" id="themeBtn" title="Light / dark">&#9681;</button>
+  <div class="hdr-actions">
+    <a class="btn ghost" href="../?course=genetics2">&larr; Quiz</a>
+    <button class="ghost" id="themeBtn" title="Light / dark">&#9681;</button>
+  </div>
 </header>
 
 <div class="steps" id="steps"></div>
@@ -94,6 +109,19 @@ const worm = ok => ok
  ? `<svg width="46" height="26" viewBox="0 0 46 26" role="img" aria-label="normal vulva"><rect x="3" y="4" width="40" height="10" rx="5" fill="#e8dfc6" stroke="#8a7d5a"/><ellipse cx="23" cy="14.6" rx="3.2" ry="1.9" fill="#4a3a1c"/><ellipse cx="13" cy="21.4" rx="3.2" ry="2.3" fill="#fff" stroke="#8a7d5a"/><ellipse cx="33" cy="21.4" rx="3.2" ry="2.3" fill="#fff" stroke="#8a7d5a"/></svg>`
  : `<svg width="46" height="26" viewBox="0 0 46 26" role="img" aria-label="Vul, bag of worms"><rect x="3" y="3" width="40" height="15" rx="7.5" fill="#e8dfc6" stroke="#8a7d5a"/><ellipse cx="12" cy="10.5" rx="3.3" ry="4.4" fill="#fff" stroke="#8a7d5a"/><ellipse cx="20" cy="10.5" rx="3.3" ry="4.4" fill="#fff" stroke="#8a7d5a"/><ellipse cx="28" cy="10.5" rx="3.3" ry="4.4" fill="#fff" stroke="#8a7d5a"/><ellipse cx="36" cy="10.5" rx="3.3" ry="4.4" fill="#fff" stroke="#8a7d5a"/></svg>`;
 const eye = ok => `<span class="eye" style="background:${ok?'var(--wtred)':'var(--brown)'}"></span>`;
+const escAttr = s => String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cImgSrc = u => /^(https?:|data:|\.{0,2}\/)/i.test(u) ? u : '../courses/' + u;
+function figOne(f){
+  if(!f) return '';
+  const cap = f.cap ? `<div class="cap">${f.cap}</div>` : '';
+  if(f.svg) return `<div class="cfig">${f.svg}${cap}</div>`;
+  if(f.img){
+    const u = cImgSrc(f.img), isSvg = /\.svg(\?|$)/i.test(u);
+    return `<div class="cfig${isSvg?'':' photo'}"><a href="${escAttr(u)}" target="_blank" rel="noopener"><img src="${escAttr(u)}" alt="${escAttr(f.alt||'Figure')}" loading="lazy"></a>${cap}</div>`;
+  }
+  return '';
+}
+const figBox = f => !f ? '' : (Array.isArray(f) ? `<div class="cfigs">${f.map(figOne).join('')}</div>` : figOne(f));
 
 /* ---------------- levels ---------------- */
 const LEVELS = [
@@ -105,6 +133,7 @@ const LEVELS = [
    <b>m2</b>, are both red. Mate them and the diploid carries one genome from each parent — but which
    genotype is it?`,
   parents:[['m1 (haploid, red)', dot(false)], ['m2 (haploid, red)', dot(false)]],
+  fig:{ img:'genetics2/ade_pathway.svg', cap:'Loss of Ade2 or Ade1 blocks adenine biosynthesis and causes red pigment accumulation in haploid yeast.' },
   cases:[
    {label:'Possibility A — both mutations are in the same gene, <i>ADE2</i>',
     qg:'What is the genotype of the diploid?',
@@ -114,10 +143,13 @@ const LEVELS = [
     eg:`Each parent brings its own damaged copy of <i>ADE2</i>, so the diploid has two mutant alleles of
         that gene and no intact one. The second option would be a heterozygote with one good copy — that is
         not what this cross makes. The third describes two genes, which is possibility B.`,
+    gfig:{ img:'genetics2/yeast_same_gene_diploid.svg' },
     qp:'So what does the diploid colony look like?', op:['red','white'], ap:0,
     ep:`No functional Ade2 protein can be made, so the block in the pathway stays and the pigment still
-        accumulates: the diploid is <b>red</b>. The two alleles <b>fail to complement</b>.`},
+        accumulates: the diploid is <b>red</b>. The two alleles <b>fail to complement</b>.`,
+    expfig:{ img:'genetics2/yeast_plate_labeled.jpg', cap:'Lecture 8 · slide 66: crossing two alleles of the same gene leaves the diploid red.' }},
    {label:'Possibility B — the mutations are in two different genes',
+    fig:{ img:'genetics2/yeast_two_genes_cross.svg' },
     qg:'What is the genotype of the diploid?',
     og:['<span class="gt">ade1 ADE2 / ADE1 ade2</span>',
         '<span class="gt">ade1 ade2 / ADE1 ADE2</span>',
@@ -126,10 +158,12 @@ const LEVELS = [
         <i>ADE1</i>, wild-type for <i>ADE2</i> — and the m2 genome is the mirror image. The second option
         would need one parent mutant for both genes, and the third leaves out the wild-type copies
         altogether, which are the whole point.`,
+    pfig:{ img:'genetics2/yeast_two_genes_diploid.svg' },
     qp:'So what does the diploid colony look like?', op:['red','white'], ap:1,
     ep:`Each genome supplies the intact copy that the other lacks: <i>ADE2</i> from m1, <i>ADE1</i> from m2.
         Both proteins are made, the pathway runs, and the diploid is <b>white</b> and grows without adenine.
-        The mutations <b>complement</b>.`}
+        The mutations <b>complement</b>.`,
+    expfig:{ img:'genetics2/yeast_plate.jpg', cap:'Real yeast mating plate: red haploid streaks on the axes, white complementing diploids at intersections.' }}
   ],
   outro:`The diploid's phenotype is therefore a readout of how many genes are involved — that is the whole
    complementation test. Next: five mutants at once, where you have to work out the groups yourself.`
@@ -140,6 +174,9 @@ const LEVELS = [
   intro:`Five haploid strains from a mutagenesis, all red and all needing adenine, so all blocked somewhere
    in adenine synthesis. Mate them pairwise and read the <b>diploid</b> colonies: white means the two
    mutations complement.`,
+  fig:{ img:'genetics2/leu_screen.jpg', cap:'Auxotrophic mutants isolated by replica-plating all look alike until crossed pairwise (Lecture 8 · slide 74).' },
+  expfig:[{ img:'genetics2/yeast_plate.jpg', cap:'Experimental mating grid: white circles mark complementing pairs (different genes), red circles mark alleles of the same gene.' },
+          { img:'genetics2/five_mutants_spanning_tree.svg', cap:'Four well-chosen crosses form a spanning tree connecting all five strains into two groups.' }],
   unit:'strain', cross:'Mate', product:'diploid colony',
   names:['A','B','C','D','E'], groups:{A:0,B:0,C:1,D:1,E:0},
   render:dot, wtWord:'white', mutWord:'red', mutPhen:'red colony, needs adenine',
@@ -154,8 +191,10 @@ const LEVELS = [
    chromosome&nbsp;2) or in <b>rosy</b> (<i>ry</i>, on chromosome&nbsp;3) both give brownish eyes. Two
    homozygous stocks, <b>s1</b> and <b>s2</b>, both have brown eyes. Cross them and score the F1.`,
   parents:[['s1 (homozygous, brown)', eye(false)], ['s2 (homozygous, brown)', eye(false)]],
+  fig:{ img:'genetics2/drosophila_eye_colors.jpg', cap:'<i>Drosophila melanogaster</i> eye-colour phenotypes: wild-type bright red vs brown and white mutants (Wikimedia Commons, public domain).' },
   cases:[
    {label:'Possibility A — both stocks are mutant in the same gene, <i>bw</i>',
+    fig:{ img:'genetics2/fly_bw_cross.svg' },
     qg:'What is the genotype of the F1?',
     og:['<span class="gt">bw<sup>1</sup> / bw<sup>2</sup></span>',
         '<span class="gt">bw<sup>1</sup> / +</span>',
@@ -163,10 +202,13 @@ const LEVELS = [
     eg:`Each parent is homozygous, so each contributes one mutant <i>bw</i> allele and the F1 is a
         heteroallelic combination of the two. It has no wild-type <i>bw</i> allele at all — unlike the
         second option, which is the heterozygote you would get by crossing to wild-type.`,
+    pfig:{ img:'genetics2/fly_bw_heteroallelic.svg' },
     qp:'So what do the F1 eyes look like?', op:['brown','red'], ap:0,
     ep:`Both copies of <i>brown</i> are defective, no functional product is made, and the F1 has
         <b>brown</b> eyes. The two alleles <b>fail to complement</b>.`},
    {label:'Possibility B — one stock is mutant in <i>bw</i>, the other in <i>ry</i>',
+    fig:[{ img:'genetics2/fly_bw_ry_chromosomes.svg' },
+         { img:'genetics2/drosophila_karyotype.jpg', cap:'<i>Drosophila</i> karyotype showing autosomes II and III (Lecture 9 · slide 75).' }],
     qg:'What is the genotype of the F1?',
     og:['<span class="gt">bw / + ; + / ry</span>',
         '<span class="gt">bw / ry</span>',
@@ -175,6 +217,7 @@ const LEVELS = [
         both: mutant <i>bw</i> from one parent against a wild-type <i>bw</i> from the other, and the same
         for <i>ry</i>. Option two would only make sense if the two mutations were alleles of one gene, and
         option three is the double homozygote, which this cross cannot produce.`,
+    pfig:{ img:'genetics2/fly_bw_ry_f1.svg' },
     qp:'So what do the F1 eyes look like?', op:['brown','red'], ap:1,
     ep:`Each chromosome carries a wild-type copy of the gene the other has lost, both pigments are made, and
         the F1 is <b>red</b> — wild-type. The mutations <b>complement</b>.`}
@@ -187,6 +230,8 @@ const LEVELS = [
   title:'Five brown-eyed stocks',
   intro:`Five homozygous stocks, all with brown eyes instead of red. Each stock is already a diploid
    homozygote, so cross two stocks and score the <b>F1</b>: red means the two mutations complement.`,
+  fig:{ img:'genetics2/fly_pathway_two_genes.svg', cap:'Blocking different enzymes of one pigment pathway gives indistinguishable brown-eyed stocks.' },
+  expfig:{ img:'genetics2/drosophila_eye_colors.jpg', cap:'Complementation in the F1 restores wild-type bright red eye pigmentation.' },
   unit:'stock', cross:'Cross', product:'F1 offspring',
   names:['1','2','3','4','5'], groups:{'1':0,'2':1,'3':0,'4':1,'5':0},
   render:eye, wtWord:'red', mutWord:'brown', mutPhen:'brown eyes',
@@ -206,7 +251,10 @@ const LEVELS = [
    are already diploid, so you do not have to build a diploid &mdash; you <b>cross</b> w1 hermaphrodites with
    w2 males and look at the cross-progeny.`,
   parents:[['w1 (hermaphrodite, Vul)', worm(false)], ['w2 (male, from a Vul strain)', worm(false)]],
+  fig:[{ img:'genetics2/celegans_vulva_lineage.jpg', cap:'Anchor cell induction of vulval precursor cells P5.p–P7.p (Lecture 8 · slide 87).' },
+       { img:'genetics2/celegans_vulva_phenotypes.jpg', cap:'Wild-type single vulva vs Vulvaless “bag of worms” (Lecture 8 · slide 90).' }],
   pre:{ q:'Hermaphrodites also fertilise themselves, so the plate holds self-progeny as well as cross-progeny. How do you recognise the cross-progeny?',
+        fig:{ img:'genetics2/celegans_xx_xo_cross.svg' },
         o:['About half of the cross-progeny are males, while selfing makes almost none &mdash; so males in the next generation mark a successful cross',
            'Cross-progeny hermaphrodites have a normal vulva and self-progeny do not',
            'Cross-progeny are visibly larger than self-progeny',
@@ -216,6 +264,7 @@ const LEVELS = [
            The vulva cannot serve as the marker, since whether it forms is exactly what is being tested.` },
   cases:[
    {label:'Possibility A — both mutations are in the same gene, <i>let-23</i>',
+    fig:{ img:'genetics2/worm_let23_cross.svg' },
     qg:'What is the genotype of a cross-progeny hermaphrodite?',
     og:['<span class="gt">let-23(a) / let-23(b)</span>',
         '<span class="gt">let-23(a) / +</span>',
@@ -231,6 +280,7 @@ const LEVELS = [
         cells and LIN-3 is not read: the cross-progeny are <b>Vul</b>. The two alleles <b>fail to
         complement</b>.`},
    {label:'Possibility B — one mutation in <i>let-23</i>, the other in <i>lin-45</i>',
+    fig:{ img:'genetics2/worm_let23_lin45_cross.svg' },
     qg:'What is the genotype of a cross-progeny hermaphrodite?',
     og:['<span class="gt">let-23(a) / + ; lin-45(b) / +</span>',
         '<span class="gt">let-23(a) / lin-45(b)</span>',
@@ -244,7 +294,8 @@ const LEVELS = [
     op:['Vul — no vulva, eggs hatch inside (bag of worms)','Normal vulva, eggs are laid'], ap:1,
     ep:`Each parent supplies the working copy of the gene the other has lost: LET-23 from the father,
         LIN-45 from the mother. The whole chain is functional, the vulva forms and the eggs are laid. The
-        mutations <b>complement</b>.`}
+        mutations <b>complement</b>.`,
+    expfig:{ img:'genetics2/celegans_egf_ras_pathway.svg', cap:'With one intact copy each of <i>let-23</i> and <i>lin-45</i>, the EGF/Ras/MAPK cascade is restored.' }}
   ],
   outro:`Same logic as in yeast and flies, now for a signalling pathway. Because the pathway is a chain, loss
    of any link gives the same Vul phenotype &mdash; so a screen for Vul returns several genes at once, and
@@ -258,6 +309,8 @@ const LEVELS = [
   intro:`A mutagenesis screen for vulvaless worms has yielded five recessive Vul strains. Cross each pair
    (hermaphrodites of one strain with males of the other) and look at the F1 cross-progeny hermaphrodites:
    a normal vulva means the two mutations complement. This time there are <b>three</b> genes in the set.`,
+  fig:{ img:'genetics2/celegans_egf_ras_pathway.svg', cap:'Multiple genes in the LIN-3 → LET-23 → LET-60 → LIN-45 → MEK-2 → MPK-1 pathway mutate to the same Vulvaless phenotype.' },
+  expfig:{ img:'genetics2/heidelberg_saturation.jpg', cap:'Screen saturation curve (Lecture 10 · slide 18): until a screen approaches saturation, some genes (like V3 here) are hit only once while others remain unhit.' },
   unit:'strain', cross:'Cross', product:'F1 cross-progeny',
   names:['V1','V2','V3','V4','V5'], groups:{V1:0,V2:1,V3:2,V4:0,V5:1}, ngenes:3, geneWord:'three',
   minNote:`at least five are needed to prove this grouping: two to show that the two pairs are alleles, and
@@ -270,7 +323,13 @@ const LEVELS = [
    other genes of the pathway are probably still unhit. What the test cannot tell you is the <i>order</i> in
    which the genes act &mdash; that takes double mutants (epistasis), not complementation.`
 },
-{ kind:'rule', tab:'4 &middot; The rule' }
+{
+  kind:'rule', tab:'4 &middot; The rule',
+  figLogic:{ img:'genetics2/complementation_rule_summary.svg' },
+  figLimits:[{ img:'genetics2/dominant_negative_gal80.jpg', cap:'Dominant-negative exception (Lecture 8 · slide 63): a dominant allele blocks function even in a heterozygote, mimicking failure to complement.' },
+             { img:'genetics2/intragenic_multimer_answer.svg', cap:'Intragenic complementation exception: two mutant alleles of one homomultimeric gene can partly rescue each other.' }],
+  figOrganisms:{ img:'genetics2/allelism_test_answer.jpg', cap:'Fission yeast allelism test (Lecture 8 · slide 80): combining haploid mutants into diploids separates alleles of <i>cdc1</i> from <i>cdc2</i>.' }
+}
 ];
 const RULE = LEVELS.length-1;
 
@@ -312,8 +371,9 @@ function starterPage(l){
         onclick="pick('pre',${oi})">${l.pre.o[oi]}</button>`;
     }).join('');
     const feed = preAns===undefined ? '' :
-      `<div class="${preAns===0?'good':'poor'}">${preAns===0?'Yes. ':'Not that one. '}${l.pre.e}</div>`;
-    return `<div class="card"><h2>First, the set-up</h2><h3>${l.pre.q}</h3>${opts}${feed}</div>`;
+      `<div class="${preAns===0?'good':'poor'}">${preAns===0?'Yes. ':'Not that one. '}${l.pre.e}</div>${figBox(l.pre.expfig)}`;
+    const body = `<div><h2>First, the set-up</h2><h3>${l.pre.q}</h3>${opts}${feed}</div>`;
+    return `<div class="card">${l.pre.fig ? `<div class="split">${body}${figBox(l.pre.fig)}</div>` : body}</div>`;
   })();
   const cases = !preDone ? '' : l.cases.map((c,ci)=>{
     const gKey='g'+ci, pKey='p'+ci;
@@ -326,7 +386,7 @@ function starterPage(l){
         onclick="pick('${gKey}',${oi})">${c.og[oi]}</button>`;
     }).join('');
     const gFeed = gAns===undefined ? '' :
-      `<div class="${gAns===0?'good':'poor'}">${gAns===0?'Yes. ':'Not that one. '}${c.eg}</div>`;
+      `<div class="${gAns===0?'good':'poor'}">${gAns===0?'Yes. ':'Not that one. '}${c.eg}</div>${figBox(c.gfig)}`;
     let phen = '';
     if(gAns!==undefined){
       const pOpts = c.op.map((o,oi)=>{
@@ -337,24 +397,23 @@ function starterPage(l){
           onclick="pick('${pKey}',${oi})">${o}</button>`;
       }).join('');
       const pFeed = pAns===undefined ? '' :
-        `<div class="${pAns===c.ap?'good':'poor'}">${pAns===c.ap?'':'Look again. '}${c.ep}</div>`;
-      phen = `<h3>${c.qp}</h3>${pOpts}${pFeed}`;
+        `<div class="${pAns===c.ap?'good':'poor'}">${pAns===c.ap?'':'Look again. '}${c.ep}</div>${figBox(c.expfig)}`;
+      phen = `<h3>${c.qp}</h3>${figBox(c.pfig)}${pOpts}${pFeed}`;
     }
-    return `<div class="card"><h2>${c.label}</h2>
-      <h3>${c.qg}</h3>${gOpts}${gFeed}${phen}</div>`;
+    const left = `<div><h2>${c.label}</h2><h3>${c.qg}</h3>${gOpts}${gFeed}${phen}</div>`;
+    return `<div class="card">${c.fig ? `<div class="split">${left}${figBox(c.fig)}</div>` : left}</div>`;
   }).join('');
 
   const done = preDone && l.cases.every((c,ci)=> s.ans['g'+ci]!==undefined && s.ans['p'+ci]!==undefined);
   if(done && !s.checked){ s.checked = true; steps(); }
 
-  return `<div class="card">
-      <h2>${l.title}</h2>
+  const introLeft = `<div><h2>${l.title}</h2>
       <p class="sub" style="color:var(--ink)">${l.intro}</p>
-      <div class="parents">${l.parents.map(p=>`<span class="parent">${p[1]} ${p[0]}</span>`).join('')}</div>
-    </div>
+      <div class="parents">${l.parents.map(p=>`<span class="parent">${p[1]} ${p[0]}</span>`).join('')}</div></div>`;
+  return `<div class="card">${l.fig ? `<div class="split">${introLeft}${figBox(l.fig)}</div>` : introLeft}</div>
     ${preCard}
     ${cases}
-    ${done ? `<div class="card"><div class="good">${l.outro}</div>
+    ${done ? `<div class="card"><div class="good">${l.outro}</div>${figBox(l.expfig)}
       <div class="row"><button class="primary" onclick="go(${cur+1})">Continue</button>
       <button class="ghost" onclick="resetLevel()">Try again</button></div></div>` : ''}`;
 }
@@ -388,7 +447,7 @@ function matrixPage(l){
         ${['gene I','gene II','gene III'].slice(0,l.ngenes||2).map((g,gi)=>
           `<button class="${s.assign[x]===gi?'on':''}" onclick="setGroup('${x}',${gi})">${g}</button>`).join('')}
       </span></div>`).join('');
-  return `<div class="card">
+  const topLeft = `<div>
     <h2>${l.title}</h2>
     <p class="sub" style="color:var(--ink)">${l.intro}</p>
     <h3>Make the crosses</h3>
@@ -400,6 +459,9 @@ function matrixPage(l){
       <span>${Object.keys(s.crosses).length} of ${n*(n-1)/2} crosses done</span>
     </div>
     <div class="log">${s.log.slice().reverse().map(x=>`<div>${x}</div>`).join('')}</div>
+  </div>`;
+  return `<div class="card">
+    ${l.fig ? `<div class="split">${topLeft}${figBox(l.fig)}</div>` : topLeft}
   </div>
   <div class="card">
     <h3>Sort them into complementation groups</h3>
@@ -443,12 +505,13 @@ function showVerdict(){
        <b>same</b> gene; a <b>${l.wtWord}</b> one means different genes.</div>`
     : `<div class="good"><b>Correct — ${l.geneWord||'two'} genes.</b> ${l.reveal}<br><br>You used <b>${n}</b>
        cross${n===1?'':'es'}; ${l.minNote||'four well-chosen ones are enough to settle five mutants.'}</div>
+       ${figBox(l.expfig)}
        <div class="row"><button class="primary" onclick="go(${cur+1})">Continue</button></div>`;
 }
 
 /* ---------------- rule ---------------- */
 function rulePage(){
-  const done = st.filter(s=>s.checked).length;
+  const r = LEVELS[RULE], done = st.slice(0,-1).filter(s=>s.checked).length;
   return `<div class="card">
     <h2>Why the test works</h2>
     <p><b>Same gene, two alleles.</b> The diploid carries two damaged copies of that gene and no intact one,
@@ -458,17 +521,20 @@ function rulePage(){
       supplies what the other lacks. Both products are made and the diploid is <b>wild-type</b>: the
       mutations <b>complement</b>. Complementation groups therefore count genes, with no sequence
       information at all.</p>
+    ${figBox(r.figLogic)}
     <h3>What the test needs</h3>
     <p class="sub" style="color:var(--ink)">Both mutations must be <b>recessive</b>. A dominant or
       dominant-negative allele keeps the heterozygote mutant whatever the second gene does, and would be
       scored as "same gene" — wrongly. In the other direction, two alleles of one gene can occasionally
       partly complement each other (intragenic complementation) when the protein works as a multimer.</p>
+    ${figBox(r.figLimits)}
     <h3>Haploid or diploid organism</h3>
     <p class="sub" style="color:var(--ink)">In yeast the mutants are haploid and show the phenotype
       themselves; you <b>mate</b> two of them to build the diploid being tested. In <i>Drosophila</i> each
       stock is already a diploid homozygote; you <b>cross</b> two stocks and score the F1. The genetics is
       identical — one mutant genome from each parent in one nucleus. <i>C.&nbsp;elegans</i> is diploid too and usually self-fertilises: you cross a mutant hermaphrodite with males of the other strain, recognise the cross-progeny by the males among them (about half of them), and score the F1 hermaphrodites.</p>
-    <div class="${done===LEVELS.length-1?'good':'note'}">${done===4
+    ${figBox(r.figOrganisms)}
+    <div class="${done===LEVELS.length-1?'good':'note'}">${done===LEVELS.length-1
       ? 'All six rounds solved.'
       : 'Rounds solved: '+done+' of '+(LEVELS.length-1)+'.'}</div>
     <div class="row">${LEVELS.slice(0,-1).map((l,i)=>

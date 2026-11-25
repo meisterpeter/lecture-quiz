@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 215" role="img" aria-label="Strain A crossed with B, C, D, and E">
+<rect width="520" height="215" rx="10" fill="#ffffff"/>
+<style>
+  text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; fill: #18242b; }
+  .title { font-size: 15px; font-weight: 700; }
+  .sub { font-size: 12.5px; fill: #526270; }
+  .lbl { font-size: 13.5px; font-weight: 700; }
+  .gt { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 700; }
+  .it { font-style: italic; }
+  .mut { fill: #c0392b; font-weight: 700; }
+  .wt { fill: #17874f; font-weight: 700; }
+  .acc { fill: #0b6e99; font-weight: 700; }
+</style>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#425466"/>
+  </marker>
+  <marker id="arrRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#c0392b"/>
+  </marker>
+  <marker id="arrOk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#17874f"/>
+  </marker>
+</defs>
+
+  <text x="260" y="26" text-anchor="middle" class="title">Diploids formed by crossing haploid Strain A with B, C, D and E</text>
+  <rect x="24" y="44" width="472" height="150" rx="14" fill="#eef2f6" stroke="#94a3b8" stroke-width="1.8"/>
+
+  <!-- Strain A horizontal bar -->
+  <text x="64" y="132" text-anchor="middle" class="lbl">Strain A</text>
+  <text x="64" y="148" text-anchor="middle" class="sub">(red, 1n)</text>
+  <rect x="40" y="100" width="60" height="16" rx="7" fill="#c0392b" stroke="#7f1d1d" stroke-width="1.4"/>
+
+  <!-- Crosses with B, C, D, E -->
+  <g transform="translate(155,0)">
+    <text x="0" y="68" text-anchor="middle" class="lbl">× B</text>
+    <circle cx="0" cy="108" r="18" fill="#c0392b" stroke="#7f1d1d" stroke-width="1.8"/>
+    <text x="0" y="148" text-anchor="middle" class="mut">red 2n</text>
+  </g>
+  <g transform="translate(245,0)">
+    <text x="0" y="68" text-anchor="middle" class="lbl">× C</text>
+    <circle cx="0" cy="108" r="18" fill="#fdfdfb" stroke="#475569" stroke-width="1.8"/>
+    <text x="0" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">white 2n</text>
+  </g>
+  <g transform="translate(335,0)">
+    <text x="0" y="68" text-anchor="middle" class="lbl">× D</text>
+    <circle cx="0" cy="108" r="18" fill="#fdfdfb" stroke="#475569" stroke-width="1.8"/>
+    <text x="0" y="148" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">white 2n</text>
+  </g>
+  <g transform="translate(425,0)">
+    <text x="0" y="68" text-anchor="middle" class="lbl">× E</text>
+    <circle cx="0" cy="108" r="18" fill="#c0392b" stroke="#7f1d1d" stroke-width="1.8"/>
+    <text x="0" y="148" text-anchor="middle" class="mut">red 2n</text>
+  </g>
+  <text x="285" y="178" text-anchor="middle" class="sub">Which strains carry mutations in the same gene as Strain A?</text>
+
+</svg>

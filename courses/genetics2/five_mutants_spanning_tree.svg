@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 235" role="img" aria-label="Four crosses connect 5 mutants into complementation groups">
+<rect width="520" height="235" rx="10" fill="#ffffff"/>
+<style>
+  text { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; fill: #18242b; }
+  .title { font-size: 15px; font-weight: 700; }
+  .sub { font-size: 12.5px; fill: #526270; }
+  .lbl { font-size: 13.5px; font-weight: 700; }
+  .gt { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 700; }
+  .it { font-style: italic; }
+  .mut { fill: #c0392b; font-weight: 700; }
+  .wt { fill: #17874f; font-weight: 700; }
+  .acc { fill: #0b6e99; font-weight: 700; }
+</style>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#425466"/>
+  </marker>
+  <marker id="arrRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#c0392b"/>
+  </marker>
+  <marker id="arrOk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#17874f"/>
+  </marker>
+</defs>
+
+  <text x="260" y="25" text-anchor="middle" class="title">Why 4 adaptive crosses settle 5 mutants (spanning tree)</text>
+  <!-- Cross 1..4 connecting m1 to m2,m3,m4,m5 or into groups -->
+  <rect x="24" y="46" width="230" height="168" rx="10" fill="#fdf8f7" stroke="#e2b4af" stroke-dasharray="5 3"/>
+  <text x="139" y="66" text-anchor="middle" class="sub" fill="#c0392b" font-weight="700">Group I (same gene)</text>
+
+  <rect x="276" y="46" width="220" height="168" rx="10" fill="#f3f9f5" stroke="#a3d5b8" stroke-dasharray="5 3"/>
+  <text x="386" y="66" text-anchor="middle" class="sub" fill="#17874f" font-weight="700">Group II (second gene)</text>
+
+  <!-- Edges: 4 crosses -->
+  <line x1="82" y1="112" x2="192" y2="112" stroke="#c0392b" stroke-width="2.6"/>
+  <text x="137" y="103" text-anchor="middle" font-size="11.5" fill="#c0392b" font-weight="700">1: mutant</text>
+
+  <line x1="82" y1="112" x2="137" y2="180" stroke="#c0392b" stroke-width="2.6"/>
+  <text x="86" y="158" text-anchor="middle" font-size="11.5" fill="#c0392b" font-weight="700">4: mutant</text>
+
+  <line x1="192" y1="112" x2="332" y2="112" stroke="#17874f" stroke-width="2.6"/>
+  <text x="262" y="103" text-anchor="middle" font-size="11.5" fill="#17874f" font-weight="700">2: WT (new gene!)</text>
+
+  <line x1="332" y1="112" x2="440" y2="156" stroke="#c0392b" stroke-width="2.6"/>
+  <text x="402" y="124" text-anchor="middle" font-size="11.5" fill="#c0392b" font-weight="700">3: mutant</text>
+
+  <!-- Nodes -->
+  <circle cx="82" cy="112" r="20" fill="#ffffff" stroke="#c0392b" stroke-width="2"/><text x="82" y="117" text-anchor="middle" class="lbl">A</text>
+  <circle cx="192" cy="112" r="20" fill="#ffffff" stroke="#c0392b" stroke-width="2"/><text x="192" y="117" text-anchor="middle" class="lbl">B</text>
+  <circle cx="137" cy="180" r="20" fill="#ffffff" stroke="#c0392b" stroke-width="2"/><text x="137" y="185" text-anchor="middle" class="lbl">E</text>
+  <circle cx="332" cy="112" r="20" fill="#ffffff" stroke="#17874f" stroke-width="2"/><text x="332" y="117" text-anchor="middle" class="lbl">C</text>
+  <circle cx="440" cy="156" r="20" fill="#ffffff" stroke="#17874f" stroke-width="2"/><text x="440" y="161" text-anchor="middle" class="lbl">D</text>
+
+</svg>
